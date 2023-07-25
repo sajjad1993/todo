@@ -6,10 +6,12 @@ package initilizer
 import (
 	"context"
 	"github.com/google/wire"
+	"github.com/sajjad1993/todo/internal/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/handlers"
 	"github.com/sajjad1993/todo/internal/gateway/app"
 	"github.com/sajjad1993/todo/internal/gateway/app/command"
+	"github.com/sajjad1993/todo/internal/gateway/app/query"
 	"github.com/sajjad1993/todo/internal/gateway/config"
 	"github.com/sajjad1993/todo/internal/gateway/container"
 	"github.com/sajjad1993/todo/pkg/log"
@@ -28,6 +30,12 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		broker.New,
 		handlers.NewHandler,
 		config.NewMessageBrokerConfig,
+		query.NewSignInQuery,
+		query.NewCheckTokenQuery,
+		app.NewCommands,
+		app.NewQueries,
+		auth_client.New,
+		command.NewCreateTodoListCommand,
 	)
 	return new(container.Container), nil
 }

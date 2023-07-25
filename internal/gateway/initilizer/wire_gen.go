@@ -8,10 +8,12 @@ package initilizer
 
 import (
 	"context"
+	"github.com/sajjad1993/todo/internal/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/handlers"
 	"github.com/sajjad1993/todo/internal/gateway/app"
 	"github.com/sajjad1993/todo/internal/gateway/app/command"
+	"github.com/sajjad1993/todo/internal/gateway/app/query"
 	"github.com/sajjad1993/todo/internal/gateway/config"
 	"github.com/sajjad1993/todo/internal/gateway/container"
 	"github.com/sajjad1993/todo/pkg/log"
@@ -34,7 +36,16 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	}
 	commandHandler := broker.New(producer)
 	signUp := command.NewSignUpCommand(commandHandler)
-	application := app.New(signUp)
+	createTodoList := command.NewCreateTodoListCommand(commandHandler)
+	commands := app.NewCommands(signUp, createTodoList)
+	repository, err := auth_client.New(logger, configConfig)
+	if err != nil {
+		return nil, err
+	}
+	signIn := query.NewSignInQuery(repository)
+	checkToken := query.NewCheckTokenQuery(repository)
+	queries := app.NewQueries(signIn, checkToken)
+	application := app.New(commands, queries)
 	handler := handlers.NewHandler(application)
 	containerContainer, err := container.NewContainer(logger, configConfig, application, commandHandler, producer, handler)
 	if err != nil {

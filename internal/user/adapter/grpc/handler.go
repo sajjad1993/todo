@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/sajjad1993/todo/internal/common"
-	rpc "github.com/sajjad1993/todo/internal/common/rpc/api/protobuf"
+	rpc "github.com/sajjad1993/todo/internal/common/rpc/user/api/protobuf"
 	"github.com/sajjad1993/todo/internal/user/app"
 	"github.com/sajjad1993/todo/pkg/log"
 	"google.golang.org/grpc/status"
@@ -28,8 +28,11 @@ func (h *Handler) GetUser(ctx context.Context, request *rpc.GetUserRequest) (*rp
 		return nil, status.Errorf(common.GetGrpcStatusCodeByError(err), err.Error())
 	}
 	return &rpc.GetUserResponse{
-		Name:     entity.Name,
-		Email:    entity.Email,
-		Password: entity.HashedPassword,
+		User: &rpc.User{
+			Name:     entity.Name,
+			Email:    entity.Email,
+			Password: entity.HashedPassword,
+			ID:       uint64(entity.ID),
+		},
 	}, nil
 }

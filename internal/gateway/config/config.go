@@ -13,6 +13,7 @@ type Config interface {
 	GetHTTPServerReadHeaderTimeout() time.Duration
 	GetHTTPServerWriteTimeout() time.Duration
 	GetHTTPServerAddress() string
+	GetAuthServiceAddress() string
 }
 type SampleConfig struct {
 	AmqpAddress                 string        `mapstructure:"AMQP_ADDRESS"`
@@ -20,6 +21,7 @@ type SampleConfig struct {
 	HTTPServerReadHeaderTimeout time.Duration `mapstructure:"HTTP_SERVER_READ_HEADER_TIMEOUT"`
 	HTTPServerWriteTimeout      time.Duration `mapstructure:"HTTP_SERVER_WRITE_TIMEOUT"`
 	HTTPServerAddress           string        `mapstructure:"HTTP_SERVER_ADDRESS"`
+	AuthServiceAddress          string        `mapstructure:"AUTH_SERVICE_ADDRESS"`
 }
 
 func New() (Config, error) {
@@ -56,4 +58,7 @@ func (s SampleConfig) GetHTTPServerWriteTimeout() time.Duration {
 }
 func (s SampleConfig) GetHTTPServerAddress() string {
 	return s.HTTPServerAddress
+}
+func (s SampleConfig) GetAuthServiceAddress() string {
+	return s.AuthServiceAddress
 }

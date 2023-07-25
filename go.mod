@@ -4,10 +4,10 @@ go 1.19
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.3
 	github.com/google/wire v0.5.0
 	github.com/jackc/pgx/v5 v5.4.2
-	github.com/lib/pq v1.10.9
 	github.com/spf13/viper v1.16.0
 	github.com/streadway/amqp v1.1.0
 	go.uber.org/zap v1.24.0

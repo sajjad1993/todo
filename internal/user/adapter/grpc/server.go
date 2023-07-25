@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"fmt"
-	rpc "github.com/sajjad1993/todo/internal/common/rpc/api/protobuf"
+	rpc "github.com/sajjad1993/todo/internal/common/rpc/user/api/protobuf"
 	"github.com/sajjad1993/todo/internal/user/adapter/grpc/middleware"
 	"github.com/sajjad1993/todo/internal/user/config"
 	"github.com/sajjad1993/todo/pkg/log"
@@ -31,6 +31,8 @@ func runGRPCServer(
 	grpcServer := grpc.NewServer(option)
 	reflection.Register(grpcServer)
 	rpc.RegisterUsersServiceServer(grpcServer, handler)
+	logger.Infof(fmt.Sprintf("Succeesssed to serve gRPC user server: %s", grpcAddress))
+
 	err = grpcServer.Serve(listener)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("Failed to serve gRPC server: %v", err))

@@ -15,6 +15,12 @@ message GetUserRequest{
 }
 
 message GetUserResponse {
+  User User = 5;
+}
+
+
+message User{
+  uint64 ID = 4;
   string Name = 1;
   string Email = 2;
   string Password = 3;

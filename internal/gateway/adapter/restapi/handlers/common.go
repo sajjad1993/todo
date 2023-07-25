@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
+	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/presenter"
+	"github.com/sajjad1993/todo/internal/gateway/domain/user"
 	"github.com/sajjad1993/todo/pkg/errs"
 	"net/http"
 )
@@ -21,4 +24,17 @@ func getStatusCodeByError(err error) int {
 	}
 	return http.StatusInternalServerError
 
+}
+
+func getUserToken(ctx *gin.Context) (*user.User, error) {
+	value, ok := ctx.Get(presenter.UserTokenKey)
+	if !ok {
+		return nil, errs.NewUnauthorizedError("user")
+	}
+	ent, ok := value.(*user.User)
+	if !ok {
+		return nil, errs.NewUnauthorizedError("user")
+
+	}
+	return ent, nil
 }

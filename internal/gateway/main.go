@@ -22,7 +22,7 @@ func main() {
 		panic(err)
 	}
 
-	restapi.Serve(container.Handler, container.Config, container.Logger)
+	restapi.Serve(container.Handler, container.Config, container.Logger, container.Application.Queries.CheckToken)
 	stop := make(chan os.Signal)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 

@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"github.com/sajjad1993/todo/pkg/errs"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,5 +30,9 @@ func (e *User) HashPassword() error {
 
 // VerifyPassword compares the given password with the user's PasswordHash and checks if they match.
 func (e *User) VerifyPassword() error {
-	return bcrypt.CompareHashAndPassword([]byte(e.Password), []byte(e.HashedPassword))
+	err := bcrypt.CompareHashAndPassword([]byte(e.Password), []byte(e.HashedPassword))
+	if err != nil {
+		return errs.NewValidationError("password")
+	}
+	return nil
 }
