@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package todo;
+
+option go_package = ".;rpc";
+
+import "google/protobuf/empty.proto";
+
+service UsersService {
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+}
+
+message CreateTodoList{
+  TodoList TodoList =1 ;
+}
+
+message GetUserResponse {
+  User User = 5;
+}
+
+
+message TodoList{
+  string Name  = 1;
+  string Description  = 2;
+  uint64 UserID = 3;
+}
