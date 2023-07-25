@@ -1,7 +1,6 @@
 package meesage_broker
 
 import (
-	"github.com/sajjad1993/todo/internal/gateway/config"
 	"github.com/streadway/amqp"
 )
 
@@ -24,10 +23,10 @@ func (r *Rabbit) Publish(key string, body []byte) error {
 	return err
 }
 
-// CreateQueue creates a queue by given key.
-func (r *Rabbit) CreateQueue(key string) error {
+// QueueDeclare creates a queue by given key. if it doesn't exist
+func (r *Rabbit) QueueDeclare(key string) error {
 	_, err := r.channel.QueueDeclare(
-		"TestQueue",
+		key,
 		false,
 		false,
 		false,
@@ -37,7 +36,37 @@ func (r *Rabbit) CreateQueue(key string) error {
 	return err
 }
 
-func New(config config.Config) (Producer, error) {
+// Consume consumes messages from a given key
+func (r *Rabbit) Consume(key string) (<-chan amqp.Delivery, error) {
+	messages, err := r.channel.Consume(
+		key,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	return messages, err
+
+}
+
+func NewProducer(config Config) (Producer, error) {
+	conn, err := amqp.Dial(config.GetAmqpAddress())
+	if err != nil {
+		return nil, err
+	}
+	ch, err := conn.Channel()
+	if err != nil {
+		return nil, err
+	}
+	r := Rabbit{
+		channel: ch,
+	}
+	return &r, nil
+}
+
+func NewConsumer(config Config) (Consumer, error) {
 	conn, err := amqp.Dial(config.GetAmqpAddress())
 	if err != nil {
 		return nil, err

@@ -15,6 +15,7 @@ func (h *Handler) SignUp() gin.HandlerFunc {
 			rest.FailedResponse(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
+
 		userEnt := &user.User{
 			Name:     req.Name,
 			Password: req.Password,

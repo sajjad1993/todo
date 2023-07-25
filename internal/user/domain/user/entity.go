@@ -7,10 +7,10 @@ import (
 
 type User struct {
 	ID             uint
-	Name           string
-	Email          string
-	Password       string
-	HashedPassword string
+	Name           string `json:"name"`
+	Email          string `json:"email"`
+	Password       string `json:"password"`
+	HashedPassword string `json:"hashed_password"`
 }
 
 // HashPassword Hashes the given password and store in it

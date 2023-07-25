@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"github.com/sajjad1993/todo/internal/domain/user"
+	"github.com/sajjad1993/todo/internal/user/domain/user"
 )
 
 type UseCase interface {

@@ -27,7 +27,8 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	if err != nil {
 		return nil, err
 	}
-	producer, err := meesage_broker.New(configConfig)
+	meesage_brokerConfig := config.NewMessageBrokerConfig(configConfig)
+	producer, err := meesage_broker.NewProducer(meesage_brokerConfig)
 	if err != nil {
 		return nil, err
 	}

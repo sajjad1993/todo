@@ -1,7 +1,7 @@
 package orm
 
 import (
-	"github.com/sajjad1993/todo/internal/domain/user"
+	"github.com/sajjad1993/todo/internal/user/domain/user"
 	"gorm.io/gorm"
 )
 
@@ -30,6 +30,7 @@ func (u *User) fromEntity(e *user.User) *User {
 	}
 	u.ID = e.ID
 	u.Name = e.Name
+	u.Email = e.Email
 	u.Password = e.HashedPassword
 	return u
 }

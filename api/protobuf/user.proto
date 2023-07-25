@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = ".;rpc";
+
+import "google/protobuf/empty.proto";
+
+service UsersService {
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+}
+
+message GetUserRequest{
+  string Email = 2;
+}
+
+message GetUserResponse {
+  string Name = 1;
+  string Email = 2;
+  string Password = 3;
+}

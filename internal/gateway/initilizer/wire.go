@@ -24,9 +24,10 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		log.NewLogger,
 		command.NewSignUpCommand,
 		app.New,
-		meesage_broker.New,
+		meesage_broker.NewProducer,
 		broker.New,
 		handlers.NewHandler,
+		config.NewMessageBrokerConfig,
 	)
 	return new(container.Container), nil
 }

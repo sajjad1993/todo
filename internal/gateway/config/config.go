@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/spf13/viper"
 	"time"
 )
@@ -36,6 +37,9 @@ func New() (Config, error) {
 		panic(fmt.Errorf("unable to decode into struct, %v", err))
 	}
 	return &c, nil
+}
+func NewMessageBrokerConfig(config Config) meesage_broker.Config {
+	return config
 }
 
 func (s SampleConfig) GetAmqpAddress() string {

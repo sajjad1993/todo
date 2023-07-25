@@ -20,6 +20,10 @@ func (c *RabbitCommandHandler) Handle(ctx context.Context, body interface{}, key
 	if err != nil {
 		return errs.NewInternalError(err.Error())
 	}
+	err = c.producer.QueueDeclare(key)
+	if err != nil {
+		return err
+	}
 	return c.producer.Publish(key, data)
 }
 
