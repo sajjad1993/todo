@@ -3,6 +3,11 @@ package command_handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"github.com/mitchellh/mapstructure"
+	"github.com/sajjad1993/todo/internal/common/broker_utils"
+	"github.com/sajjad1993/todo/internal/common/command_utils"
+	"github.com/sajjad1993/todo/internal/common/publisher"
 	"github.com/sajjad1993/todo/internal/todo_list/app"
 	"github.com/sajjad1993/todo/internal/todo_list/domain/todo"
 	"github.com/sajjad1993/todo/pkg/errs"
@@ -11,17 +16,21 @@ import (
 	"time"
 )
 
-const CreateTodoList = "CREATE_TODO_LIST"
-
 type CreateTodoListHandler struct {
-	timeOut  time.Duration
-	key      string
-	consumer meesage_broker.Consumer
-	service  app.UseCase
-	logger   log.Logger
+	timeOut   time.Duration
+	key       string
+	DoneKey   string
+	consumer  meesage_broker.Consumer
+	service   app.UseCase
+	logger    log.Logger
+	publisher publisher.CommandPublisher
 }
 
 func (h CreateTodoListHandler) Handle() error {
+	err := h.consumer.QueueDeclare(h.key)
+	if err != nil {
+		return err
+	}
 	messages, err := h.consumer.Consume(h.key)
 	h.logger.Infof("start listening to queue : %s", h.key)
 
@@ -44,28 +53,47 @@ func (h CreateTodoListHandler) Handle() error {
 }
 
 func (h *CreateTodoListHandler) handleService(data []byte) error {
-	var ent todo.List
-	err := json.Unmarshal(data, &ent)
+	fmt.Printf("new message has reccived from %s queue by todo service \n ", h.key)
+	var message command_utils.CommandMessage
+	err := json.Unmarshal(data, &message)
 	if err != nil {
 		return err
+	}
+	var ent todo.List
+	err = mapstructure.Decode(message.Data, &ent)
+	if err != nil {
+		return errs.NewValidationError("data is corrected")
 	}
 	ctx, _ := context.WithTimeout(context.Background(), h.timeOut)
 
-	err = h.service.CreateToDoList(ctx, &ent)
+	commandError := h.service.CreateToDoList(ctx, &ent)
+	return h.publish(&message, commandError)
+}
+
+func (h *CreateTodoListHandler) publish(message *command_utils.CommandMessage, CommandError error) error {
+	message.Status = command_utils.GetCommandStatusFromError(CommandError)
+	if CommandError != nil {
+		message.Message = CommandError.Error()
+	}
+	ctx, _ := context.WithTimeout(context.Background(), h.timeOut)
+	err := h.publisher.Publish(ctx, message, h.DoneKey)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("new message has sent from todo service into %s queue \n --- the messsage is %v  ", h.DoneKey, message)
 	return nil
 }
 
-func NewCreateTodoListHandler(consumer meesage_broker.Consumer, service app.UseCase, logger log.Logger) *CreateTodoListHandler {
+func NewCreateTodoListHandler(consumer meesage_broker.Consumer, service app.UseCase, logger log.Logger, publisher publisher.CommandPublisher) *CreateTodoListHandler {
 	timeout := 5 * time.Second //todo move to config
-	key := CreateTodoList
+
 	return &CreateTodoListHandler{
-		timeOut:  timeout,
-		key:      key,
-		consumer: consumer,
-		service:  service,
-		logger:   logger,
+		timeOut:   timeout,
+		key:       broker_utils.CreateTodoListCommand,
+		DoneKey:   broker_utils.DoneCreateTodoListCommand,
+		consumer:  consumer,
+		service:   service,
+		logger:    logger,
+		publisher: publisher,
 	}
 }

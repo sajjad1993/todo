@@ -7,7 +7,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/sajjad1993/todo/internal/common/broker_utils"
 	"github.com/sajjad1993/todo/internal/common/command_utils"
-	"github.com/sajjad1993/todo/internal/user/adapter/broker/publisher"
+	"github.com/sajjad1993/todo/internal/common/publisher"
 	"github.com/sajjad1993/todo/internal/user/app"
 	"github.com/sajjad1993/todo/internal/user/domain/user"
 	"github.com/sajjad1993/todo/pkg/errs"
@@ -27,6 +27,10 @@ type SignUpHandler struct {
 }
 
 func (h SignUpHandler) Handle() error {
+	err := h.consumer.QueueDeclare(h.key)
+	if err != nil {
+		return err
+	}
 	messages, err := h.consumer.Consume(h.key)
 	h.logger.Infof("start listening to queue : %s", h.key)
 
@@ -68,7 +72,9 @@ func (h *SignUpHandler) handleService(data []byte) error {
 
 func (h *SignUpHandler) publish(message *command_utils.CommandMessage, CommandError error) error {
 	message.Status = command_utils.GetCommandStatusFromError(CommandError)
-	message.Message = CommandError.Error()
+	if CommandError != nil {
+		message.Message = CommandError.Error()
+	}
 	ctx, _ := context.WithTimeout(context.Background(), h.timeOut)
 	err := h.publisher.Publish(ctx, message, h.DoneKey)
 	if err != nil {

@@ -15,7 +15,13 @@ type CommandsHandlers struct {
 	handlers []CommandHandler
 }
 
-func New(logger log.Logger, signUp *command.SignUp, consumer meesage_broker.Consumer) (*CommandsHandlers, error) {
+func New(logger log.Logger, consumer meesage_broker.Consumer,
+	signUp *command.SignUp,
+	createTodoList *command.CreateTodoList,
+	createTodo *command.CreateTodo,
+	deleteTodoList *command.DeleteTodoList,
+
+) (*CommandsHandlers, error) {
 	commandHandlers := &CommandsHandlers{
 		logger: logger,
 	}
@@ -23,6 +29,26 @@ func New(logger log.Logger, signUp *command.SignUp, consumer meesage_broker.Cons
 	signUpHandler := NewCommandHandler(consumer, signUp, logger)
 	commandHandlers.handlers = append(commandHandlers.handlers, signUpHandler)
 	err := signUpHandler.Handle()
+	if err != nil {
+		return nil, err
+	}
+	createTodoListHandler := NewCommandHandler(consumer, createTodoList, logger)
+	commandHandlers.handlers = append(commandHandlers.handlers, signUpHandler)
+	err = createTodoListHandler.Handle()
+	if err != nil {
+		return nil, err
+	}
+
+	createTodoHandler := NewCommandHandler(consumer, createTodo, logger)
+	commandHandlers.handlers = append(commandHandlers.handlers, createTodoHandler)
+	err = createTodoHandler.Handle()
+	if err != nil {
+		return nil, err
+	}
+
+	deleteTodoListHandler := NewCommandHandler(consumer, deleteTodoList, logger)
+	commandHandlers.handlers = append(commandHandlers.handlers, deleteTodoListHandler)
+	err = deleteTodoListHandler.Handle()
 	if err != nil {
 		return nil, err
 	}

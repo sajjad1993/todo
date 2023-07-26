@@ -18,6 +18,9 @@ const (
 )
 
 func GetCommandStatusFromError(err error) CommandStatus {
+	if err == nil {
+		return SuccessStatus
+	}
 	if errors.Is(err, errs.ErrValidation) {
 		return ValidationErrorStatus
 	}

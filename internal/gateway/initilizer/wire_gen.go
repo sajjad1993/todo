@@ -63,7 +63,7 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	if err != nil {
 		return nil, err
 	}
-	commandsHandlers, err := command_handlers.New(logger, signUp, consumer)
+	commandsHandlers, err := command_handlers.New(logger, consumer, signUp, createTodoList, createTodo, deleteTodoList)
 	if err != nil {
 		return nil, err
 	}

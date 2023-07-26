@@ -8,8 +8,8 @@ package initilizer
 
 import (
 	"context"
+	"github.com/sajjad1993/todo/internal/common/publisher"
 	"github.com/sajjad1993/todo/internal/user/adapter/broker/command_handlers"
-	"github.com/sajjad1993/todo/internal/user/adapter/broker/publisher"
 	"github.com/sajjad1993/todo/internal/user/adapter/grpc"
 	"github.com/sajjad1993/todo/internal/user/adapter/reposiroty/orm"
 	"github.com/sajjad1993/todo/internal/user/app"

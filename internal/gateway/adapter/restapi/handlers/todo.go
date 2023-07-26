@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sajjad1993/todo/internal/common/broker_utils"
+	"github.com/sajjad1993/todo/internal/common/command_utils"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/presenter/request"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/presenter/response"
 	"github.com/sajjad1993/todo/internal/gateway/domain/todo"
@@ -27,12 +29,19 @@ func (h *Handler) CreateTodoList() gin.HandlerFunc {
 			Description: req.Description,
 			UserID:      token.ID,
 		}
-		err = h.application.Commands.CreateTodoList.Execute(ctx, todoListEnt)
-		if err != nil {
-			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-			return
+		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoListEnt)
+		commandChanel := h.application.Commands.CreateTodoList.Execute(ctx, commandMessage)
+		select {
+		case <-ctx.Done():
+			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
+		case message := <-commandChanel:
+			err := message.GetError()
+			if err != nil {
+				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+				return
+			}
+			rest.OKResponse(ctx)
 		}
-		rest.OKResponse(ctx)
 	}
 }
 
@@ -103,12 +112,23 @@ func (h *Handler) DeleteTodoList() gin.HandlerFunc {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
 		}
-		err = h.application.Commands.DeleteTodoList.Execute(ctx, uint(todoListId), token.ID)
-		if err != nil {
-			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-			return
+		message := broker_utils.DeleteTodoListMessage{
+			ID:     uint(todoListId),
+			UserID: token.ID,
 		}
-		rest.OKResponse(ctx)
+		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, message)
+		commandChanel := h.application.Commands.DeleteTodoList.Execute(ctx, commandMessage)
+		select {
+		case <-ctx.Done():
+			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
+		case message := <-commandChanel:
+			err := message.GetError()
+			if err != nil {
+				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+				return
+			}
+			rest.OKResponse(ctx)
+		}
 	}
 }
 
@@ -130,12 +150,19 @@ func (h *Handler) CreateTodo() gin.HandlerFunc {
 			ListId:   req.ListID,
 			UserId:   token.ID,
 		}
-		err = h.application.Commands.CreateTodo.Execute(ctx, todoEnt)
-		if err != nil {
-			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-			return
+		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoEnt)
+		commandChanel := h.application.Commands.CreateTodoList.Execute(ctx, commandMessage)
+		select {
+		case <-ctx.Done():
+			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
+		case message := <-commandChanel:
+			err := message.GetError()
+			if err != nil {
+				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+				return
+			}
+			rest.OKResponse(ctx)
 		}
-		rest.OKResponse(ctx)
 	}
 }
 

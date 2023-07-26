@@ -6,6 +6,7 @@ package initilizer
 import (
 	"context"
 	"github.com/google/wire"
+	"github.com/sajjad1993/todo/internal/common/publisher"
 	"github.com/sajjad1993/todo/internal/todo_list/adapter/broker/command_handlers"
 	"github.com/sajjad1993/todo/internal/todo_list/adapter/grpc"
 	"github.com/sajjad1993/todo/internal/todo_list/adapter/reposiroty/orm"
@@ -37,6 +38,8 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		orm.NewTodoRepository,
 		db.NewDb,
 		meesage_broker.NewConsumer,
+		meesage_broker.NewProducer,
+		publisher.New,
 	)
 	return new(container.Container), nil
 }
