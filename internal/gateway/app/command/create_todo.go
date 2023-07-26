@@ -2,7 +2,7 @@ package command
 
 import (
 	"context"
-	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
+	"github.com/sajjad1993/todo/internal/gateway/app/publisher"
 	"github.com/sajjad1993/todo/internal/gateway/domain/todo"
 )
 
@@ -10,7 +10,7 @@ const CreateTodoCommand = "CREATE_TODO"
 
 type CreateTodo struct {
 	Name    string
-	handler broker.CommandHandler
+	handler publisher.CommandPublisher
 }
 
 func (c *CreateTodo) GetName() string {
@@ -19,7 +19,7 @@ func (c *CreateTodo) GetName() string {
 
 func (c *CreateTodo) Execute(ctx context.Context, todoItem *todo.Item) error {
 
-	err := c.handler.Handle(ctx, todoItem, c.GetName())
+	err := c.handler.Publish(ctx, todoItem, c.GetName())
 	if err != nil {
 		//we can retry that .
 		return err
@@ -27,7 +27,7 @@ func (c *CreateTodo) Execute(ctx context.Context, todoItem *todo.Item) error {
 	return nil
 }
 
-func NewCreateTodoCommand(handler broker.CommandHandler) *CreateTodo {
+func NewCreateTodoCommand(handler publisher.CommandPublisher) *CreateTodo {
 	return &CreateTodo{
 		Name:    CreateTodoCommand,
 		handler: handler,

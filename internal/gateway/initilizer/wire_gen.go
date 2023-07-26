@@ -10,6 +10,7 @@ import (
 	"context"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
+	"github.com/sajjad1993/todo/internal/gateway/adapter/broker/consumer/command_handlers"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/handlers"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/internal/gateway/app"
@@ -35,14 +36,14 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	if err != nil {
 		return nil, err
 	}
-	commandHandler := broker.New(producer)
-	signUp := command.NewSignUpCommand(commandHandler)
-	createTodo := command.NewCreateTodoCommand(commandHandler)
-	createTodoList := command.NewCreateTodoListCommand(commandHandler)
-	updateTodoList := command.NewUpdateTodoListCommand(commandHandler)
-	deleteTodoList := command.NewDeleteTodoListCommand(commandHandler)
-	updateTodo := command.NewUpdateTodoCommand(commandHandler)
-	deleteTodo := command.NewDeleteTodoCommand(commandHandler)
+	commandPublisher := broker.New(producer)
+	signUp := command.NewSignUpCommand(commandPublisher)
+	createTodo := command.NewCreateTodoCommand(commandPublisher)
+	createTodoList := command.NewCreateTodoListCommand(commandPublisher)
+	updateTodoList := command.NewUpdateTodoListCommand(commandPublisher)
+	deleteTodoList := command.NewDeleteTodoListCommand(commandPublisher)
+	updateTodo := command.NewUpdateTodoCommand(commandPublisher)
+	deleteTodo := command.NewDeleteTodoCommand(commandPublisher)
 	commands := app.NewCommands(signUp, createTodo, createTodoList, updateTodoList, deleteTodoList, updateTodo, deleteTodo)
 	repository, err := auth_client.New(logger, configConfig)
 	if err != nil {
@@ -58,7 +59,15 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	queries := app.NewQueries(signIn, checkToken, listToDoList)
 	application := app.New(commands, queries)
 	handler := handlers.NewHandler(application)
-	containerContainer, err := container.NewContainer(logger, configConfig, application, commandHandler, producer, handler)
+	consumer, err := meesage_broker.NewConsumer(meesage_brokerConfig)
+	if err != nil {
+		return nil, err
+	}
+	commandsHandlers, err := command_handlers.New(logger, signUp, consumer)
+	if err != nil {
+		return nil, err
+	}
+	containerContainer, err := container.NewContainer(logger, configConfig, application, commandPublisher, producer, handler, commandsHandlers)
 	if err != nil {
 		return nil, err
 	}
