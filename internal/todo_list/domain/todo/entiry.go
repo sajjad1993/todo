@@ -5,8 +5,8 @@ type Item struct {
 	Title    string
 	Priority uint
 	TodoList *List
-	ListId   uint
-	UserId   uint
+	ListID   uint
+	UserID   uint
 }
 
 type List struct {

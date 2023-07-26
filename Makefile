@@ -7,6 +7,12 @@ gen-grpc:
     		--go_opt=paths=source_relative --go_out=internal/common/rpc/auth \
     		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/common/rpc/auth \
     		api/protobuf/auth.proto
+	@protoc \
+    		--go_opt=paths=source_relative --go_out=internal/common/rpc/todo_list \
+    		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/common/rpc/todo_list \
+    		api/protobuf/todo_list.proto
+
+
 
 install_tools:
 	@apt update

@@ -11,6 +11,7 @@ import (
 	"github.com/sajjad1993/todo/internal/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/handlers"
+	"github.com/sajjad1993/todo/internal/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/internal/gateway/app"
 	"github.com/sajjad1993/todo/internal/gateway/app/command"
 	"github.com/sajjad1993/todo/internal/gateway/app/query"
@@ -36,15 +37,25 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	}
 	commandHandler := broker.New(producer)
 	signUp := command.NewSignUpCommand(commandHandler)
+	createTodo := command.NewCreateTodoCommand(commandHandler)
 	createTodoList := command.NewCreateTodoListCommand(commandHandler)
-	commands := app.NewCommands(signUp, createTodoList)
+	updateTodoList := command.NewUpdateTodoListCommand(commandHandler)
+	deleteTodoList := command.NewDeleteTodoListCommand(commandHandler)
+	updateTodo := command.NewUpdateTodoCommand(commandHandler)
+	deleteTodo := command.NewDeleteTodoCommand(commandHandler)
+	commands := app.NewCommands(signUp, createTodo, createTodoList, updateTodoList, deleteTodoList, updateTodo, deleteTodo)
 	repository, err := auth_client.New(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
 	signIn := query.NewSignInQuery(repository)
 	checkToken := query.NewCheckTokenQuery(repository)
-	queries := app.NewQueries(signIn, checkToken)
+	todoRepository, err := todo_list_client.New(logger, configConfig)
+	if err != nil {
+		return nil, err
+	}
+	listToDoList := query.NewListToDoList(todoRepository)
+	queries := app.NewQueries(signIn, checkToken, listToDoList)
 	application := app.New(commands, queries)
 	handler := handlers.NewHandler(application)
 	containerContainer, err := container.NewContainer(logger, configConfig, application, commandHandler, producer, handler)

@@ -14,6 +14,8 @@ type Config interface {
 	GetHTTPServerWriteTimeout() time.Duration
 	GetHTTPServerAddress() string
 	GetAuthServiceAddress() string
+
+	GetTodoServiceAddress() string
 }
 type SampleConfig struct {
 	AmqpAddress                 string        `mapstructure:"AMQP_ADDRESS"`
@@ -22,6 +24,7 @@ type SampleConfig struct {
 	HTTPServerWriteTimeout      time.Duration `mapstructure:"HTTP_SERVER_WRITE_TIMEOUT"`
 	HTTPServerAddress           string        `mapstructure:"HTTP_SERVER_ADDRESS"`
 	AuthServiceAddress          string        `mapstructure:"AUTH_SERVICE_ADDRESS"`
+	TodoServiceAddress          string        `mapstructure:"TODO_SERVICE_ADDRESS"`
 }
 
 func New() (Config, error) {
@@ -61,4 +64,8 @@ func (s SampleConfig) GetHTTPServerAddress() string {
 }
 func (s SampleConfig) GetAuthServiceAddress() string {
 	return s.AuthServiceAddress
+}
+
+func (s SampleConfig) GetTodoServiceAddress() string {
+	return s.TodoServiceAddress
 }

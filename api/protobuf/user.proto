@@ -4,7 +4,6 @@ package user;
 
 option go_package = ".;rpc";
 
-import "google/protobuf/empty.proto";
 
 service UsersService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
