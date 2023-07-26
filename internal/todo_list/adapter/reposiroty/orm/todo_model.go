@@ -7,10 +7,10 @@ import (
 
 type TodoItem struct {
 	gorm.Model
-	Title    string    `json:"title" gorm:"not null;size:32"`
-	Priority uint      `json:"priority" gorm:"not null"`
-	TodoList *TodoList `json:"list"`
-	ListId   uint      `json:"list-id"`
+	Title      string    `json:"title" gorm:"not null;size:32"`
+	Priority   uint      `json:"priority" gorm:"not null"`
+	TodoList   *TodoList `json:"list"gorm:"foreignkey:TodoListID"`
+	TodoListID uint      `json:"todo_list_id"`
 }
 
 func (t *TodoItem) toEntity() *todo.Item {
@@ -21,7 +21,7 @@ func (t *TodoItem) toEntity() *todo.Item {
 		ID:       t.ID,
 		Title:    t.Title,
 		Priority: t.Priority,
-		ListID:   t.ListId,
+		ListID:   t.TodoListID,
 	}
 }
 
@@ -32,6 +32,6 @@ func (t *TodoItem) fromEntity(e *todo.Item) *TodoItem {
 	t.ID = e.ID
 	t.Title = e.Title
 	t.Priority = e.Priority
-	t.ListId = e.ListID
+	t.TodoListID = e.ListID
 	return t
 }

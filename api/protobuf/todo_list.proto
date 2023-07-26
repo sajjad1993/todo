@@ -19,11 +19,13 @@ message ListTodoListResponse {
 
 
 message TodoList{
+  uint64 ID = 4;
   string Name  = 1;
   string Description  = 2;
   repeated TodoItem TodoItems = 3;
 }
 message TodoItem{
+  uint64 ID = 4;
   string Title  = 1;
   uint64 Priority  = 2;
 }

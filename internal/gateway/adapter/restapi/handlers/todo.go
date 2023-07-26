@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/presenter/request"
+	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/presenter/response"
 	"github.com/sajjad1993/todo/internal/gateway/domain/todo"
 	"github.com/sajjad1993/todo/pkg/rest"
 	"net/http"
@@ -48,7 +49,10 @@ func (h *Handler) ListTodoList() gin.HandlerFunc {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
 		}
-		rest.GeneralResponse(ctx, http.StatusOK, true, "", todos, nil)
+
+		var result response.TodoLists
+		rest.GeneralResponse(ctx, http.StatusOK, true, "",
+			response.ListToDOListResponse{Lists: result.FromEntity(todos)}, nil)
 	}
 }
 func (h *Handler) UpdateTodoList() gin.HandlerFunc {
@@ -58,7 +62,7 @@ func (h *Handler) UpdateTodoList() gin.HandlerFunc {
 			rest.FailedResponse(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
-		param := ctx.Param("todoListId")
+		param := ctx.Param("id")
 		todoListId, err := strconv.Atoi(param)
 
 		if err != nil {
@@ -87,7 +91,7 @@ func (h *Handler) UpdateTodoList() gin.HandlerFunc {
 }
 func (h *Handler) DeleteTodoList() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		param := ctx.Param("todoListId")
+		param := ctx.Param("id")
 		todoListId, err := strconv.Atoi(param)
 
 		if err != nil {
@@ -120,13 +124,13 @@ func (h *Handler) CreateTodo() gin.HandlerFunc {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
 		}
-		todoListEnt := &todo.Item{
+		todoEnt := &todo.Item{
 			Title:    req.Title,
 			Priority: req.Priority,
 			ListId:   req.ListID,
 			UserId:   token.ID,
 		}
-		err = h.application.Commands.CreateTodo.Execute(ctx, todoListEnt)
+		err = h.application.Commands.CreateTodo.Execute(ctx, todoEnt)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return

@@ -31,12 +31,14 @@ func toEntity(response *rpc.ListTodoListResponse) []*todo.List {
 	var result []*todo.List
 	for _, list := range response.TodoLists {
 		todoList := &todo.List{
+			ID:          uint(list.ID),
 			Name:        list.Name,
 			Description: list.Description,
 		}
 		var items []*todo.Item
 		for _, item := range list.TodoItems {
 			todoItem := &todo.Item{
+				ID:       uint(item.ID),
 				Title:    item.Title,
 				Priority: uint(item.Priority),
 			}
@@ -48,7 +50,7 @@ func toEntity(response *rpc.ListTodoListResponse) []*todo.List {
 	return result
 }
 func New(logger log.Logger, config config.Config) (todo.Repository, error) {
-	cc, err := grpc.Dial(fmt.Sprintf("%s", config.GetAuthServiceAddress()), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	cc, err := grpc.Dial(fmt.Sprintf("%s", config.GetTodoServiceAddress()), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("cant connect to user service: %s", err))
 		cc.Close()

@@ -8,7 +8,7 @@ type TodoList struct {
 type Todo struct {
 	Title    string `json:"title" validation:"required" `
 	Priority uint   `json:"priority" validation:"required"  `
-	ListID   uint   `json:"listID" validation:"required"`
+	ListID   uint   `json:"list_id" validation:"required"`
 }
 
 type UpdateTodo struct {

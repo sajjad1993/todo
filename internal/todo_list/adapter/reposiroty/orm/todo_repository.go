@@ -29,7 +29,7 @@ func (r *TodoRepository) CreateItem(ctx context.Context, item *todo.Item) error 
 
 func (r *TodoRepository) GetListByUserId(ctx context.Context, userId uint) ([]*todo.List, error) {
 	var result []TodoList
-	err := r.db.WithContext(ctx).Where("user_id = ?", userId).Preload("ToDoItem").Find(&result).Error
+	err := r.db.WithContext(ctx).Where("user_id = ?", userId).Preload("TodoItems").Find(&result).Error
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (r *TodoRepository) UpdateList(ctx context.Context, id uint, list *todo.Lis
 }
 
 func (r *TodoRepository) DeleteList(ctx context.Context, listId uint) error {
-	err := r.db.WithContext(ctx).Where("list_id = ?", listId).Delete(&TodoItem{}).Error
+	err := r.db.WithContext(ctx).Where("todo_list_id = ?", listId).Delete(&TodoItem{}).Error
 
 	err = r.db.WithContext(ctx).Where("id = ?", listId).Delete(&TodoList{}).Error
 	return err
