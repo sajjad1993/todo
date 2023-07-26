@@ -6,8 +6,9 @@ package initilizer
 import (
 	"context"
 	"github.com/google/wire"
+	"github.com/sajjad1993/todo/internal/common/publisher"
 	"github.com/sajjad1993/todo/internal/user/adapter/broker/command_handlers"
-	grpc "github.com/sajjad1993/todo/internal/user/adapter/grpc"
+	"github.com/sajjad1993/todo/internal/user/adapter/grpc"
 	"github.com/sajjad1993/todo/internal/user/adapter/reposiroty/orm"
 	"github.com/sajjad1993/todo/internal/user/app"
 	"github.com/sajjad1993/todo/internal/user/config"
@@ -32,6 +33,8 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		grpc.New,
 		db.NewDb,
 		meesage_broker.NewConsumer,
+		meesage_broker.NewProducer,
+		publisher.New,
 	)
 	return new(container.Container), nil
 }

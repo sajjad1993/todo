@@ -8,6 +8,7 @@ package initilizer
 
 import (
 	"context"
+	"github.com/sajjad1993/todo/internal/common/publisher"
 	"github.com/sajjad1993/todo/internal/todo_list/adapter/broker/command_handlers"
 	"github.com/sajjad1993/todo/internal/todo_list/adapter/grpc"
 	"github.com/sajjad1993/todo/internal/todo_list/adapter/reposiroty/orm"
@@ -40,9 +41,14 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	if err != nil {
 		return nil, err
 	}
-	createTodoListHandler := command_handlers.NewCreateTodoListHandler(consumer, useCase, logger)
-	createTodoHandler := command_handlers.NewCreateTodoHandler(consumer, useCase, logger)
-	deleteTodoListHandler := command_handlers.NewDeleteTodoListHandler(consumer, useCase, logger)
+	producer, err := meesage_broker.NewProducer(meesage_brokerConfig)
+	if err != nil {
+		return nil, err
+	}
+	commandPublisher := publisher.New(producer)
+	createTodoListHandler := command_handlers.NewCreateTodoListHandler(consumer, useCase, logger, commandPublisher)
+	createTodoHandler := command_handlers.NewCreateTodoHandler(consumer, useCase, logger, commandPublisher)
+	deleteTodoListHandler := command_handlers.NewDeleteTodoListHandler(consumer, useCase, logger, commandPublisher)
 	updateTodoListHandler := command_handlers.NewUpdateTodoListHandler(consumer, useCase, logger)
 	updateTodoHandler := command_handlers.NewUpdateTodoHandler(consumer, useCase, logger)
 	deleteTodoHandler := command_handlers.NewDeleteTodoHandler(consumer, useCase, logger)

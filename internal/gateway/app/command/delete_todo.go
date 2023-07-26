@@ -2,7 +2,7 @@ package command
 
 import (
 	"context"
-	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
+	"github.com/sajjad1993/todo/internal/gateway/app/publisher"
 )
 
 const DeleteTodoCommand = "DELETE_TODO"
@@ -13,7 +13,7 @@ type deleteTodoMessage struct {
 }
 type DeleteTodo struct {
 	Name    string
-	handler broker.CommandHandler
+	handler publisher.CommandPublisher
 }
 
 func (c *DeleteTodo) GetName() string {
@@ -25,7 +25,7 @@ func (c *DeleteTodo) Execute(ctx context.Context, todoId uint, userId uint) erro
 		ID:     todoId,
 		UserID: userId,
 	}
-	err := c.handler.Handle(ctx, message, c.GetName())
+	err := c.handler.Publish(ctx, message, c.GetName())
 	if err != nil {
 		//we can retry that .
 		return err
@@ -33,7 +33,7 @@ func (c *DeleteTodo) Execute(ctx context.Context, todoId uint, userId uint) erro
 	return nil
 }
 
-func NewDeleteTodoCommand(handler broker.CommandHandler) *DeleteTodo {
+func NewDeleteTodoCommand(handler publisher.CommandPublisher) *DeleteTodo {
 	return &DeleteTodo{
 		Name:    DeleteTodoCommand,
 		handler: handler,

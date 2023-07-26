@@ -2,33 +2,48 @@ package command
 
 import (
 	"context"
-	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
-	"github.com/sajjad1993/todo/internal/gateway/domain/user"
+	"fmt"
+	"github.com/sajjad1993/todo/internal/common/broker_utils"
+	"github.com/sajjad1993/todo/internal/common/command_utils"
+	"github.com/sajjad1993/todo/internal/gateway/app/publisher"
 )
 
-const SignUpCommand = "SIGNUP"
-
 type SignUp struct {
-	Name    string
-	handler broker.CommandHandler
+	Name      string
+	DoneName  string
+	publisher publisher.CommandPublisher
+	*ChannelCommandManager
 }
 
 func (c *SignUp) GetName() string {
 	return c.Name
 }
 
-func (c *SignUp) Execute(ctx context.Context, user *user.User) error {
-	err := c.handler.Handle(ctx, user, c.GetName())
-	if err != nil {
-		//we can retry that .
-		return err
-	}
-	return nil
+func (c *SignUp) GetDoneName() string {
+	return c.DoneName
 }
 
-func NewSignUpCommand(handler broker.CommandHandler) *SignUp {
+func (c *SignUp) Execute(ctx context.Context, message *command_utils.CommandMessage) <-chan *command_utils.CommandMessage {
+	commandChannel := c.SetCommandChannel(message)
+	go func() {
+		err := c.publisher.Publish(ctx, message, c.GetName())
+		if err != nil {
+			//we can retry that .
+			errMessage := command_utils.NewCommandMessage("", command_utils.GetCommandStatusFromError(err),
+				nil)
+			c.DeleteCommandChannel(errMessage)
+		}
+		fmt.Printf("new message has sent from gateway into %s queue \n ", c.GetName())
+	}()
+	return commandChannel
+}
+
+func NewSignUpCommand(publisher publisher.CommandPublisher) *SignUp {
+
 	return &SignUp{
-		Name:    SignUpCommand,
-		handler: handler,
+		Name:                  broker_utils.SignUp,
+		DoneName:              broker_utils.DoneSignUp,
+		publisher:             publisher,
+		ChannelCommandManager: newCommandChannelManager(),
 	}
 }

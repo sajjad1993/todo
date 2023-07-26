@@ -2,7 +2,7 @@ package command
 
 import (
 	"context"
-	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
+	"github.com/sajjad1993/todo/internal/gateway/app/publisher"
 	"github.com/sajjad1993/todo/internal/gateway/domain/todo"
 )
 
@@ -10,7 +10,7 @@ const UpdateTodoListCommand = "UPDATE_TODO_LIST"
 
 type UpdateTodoList struct {
 	Name    string
-	handler broker.CommandHandler
+	handler publisher.CommandPublisher
 }
 
 func (c *UpdateTodoList) GetName() string {
@@ -19,7 +19,7 @@ func (c *UpdateTodoList) GetName() string {
 
 func (c *UpdateTodoList) Execute(ctx context.Context, todoList *todo.List) error {
 
-	err := c.handler.Handle(ctx, todoList, c.GetName())
+	err := c.handler.Publish(ctx, todoList, c.GetName())
 	if err != nil {
 		//we can retry that .
 		return err
@@ -27,7 +27,7 @@ func (c *UpdateTodoList) Execute(ctx context.Context, todoList *todo.List) error
 	return nil
 }
 
-func NewUpdateTodoListCommand(handler broker.CommandHandler) *UpdateTodoList {
+func NewUpdateTodoListCommand(handler publisher.CommandPublisher) *UpdateTodoList {
 	return &UpdateTodoList{
 		Name:    UpdateTodoListCommand,
 		handler: handler,

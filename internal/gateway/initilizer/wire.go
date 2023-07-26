@@ -8,6 +8,7 @@ import (
 	"github.com/google/wire"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
+	"github.com/sajjad1993/todo/internal/gateway/adapter/broker/consumer/command_handlers"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/handlers"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/internal/gateway/app"
@@ -23,12 +24,14 @@ import (
 func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	wire.Build(
 		container.NewContainer,
+		broker.New,
+
 		config.New,
 		log.NewLogger,
 		command.NewSignUpCommand,
 		app.New,
 		meesage_broker.NewProducer,
-		broker.New,
+		meesage_broker.NewConsumer,
 		handlers.NewHandler,
 		config.NewMessageBrokerConfig,
 		query.NewSignInQuery,
@@ -44,6 +47,7 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		command.NewUpdateTodoListCommand,
 		command.NewUpdateTodoCommand,
 		command.NewDeleteTodoCommand,
+		command_handlers.New,
 	)
 	return new(container.Container), nil
 }

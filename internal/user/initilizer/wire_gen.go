@@ -8,6 +8,7 @@ package initilizer
 
 import (
 	"context"
+	"github.com/sajjad1993/todo/internal/common/publisher"
 	"github.com/sajjad1993/todo/internal/user/adapter/broker/command_handlers"
 	"github.com/sajjad1993/todo/internal/user/adapter/grpc"
 	"github.com/sajjad1993/todo/internal/user/adapter/reposiroty/orm"
@@ -41,7 +42,12 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		return nil, err
 	}
 	handler := grpc.New(useCase, logger)
-	signUpHandler := command_handlers.NewSignUpCommandHandler(consumer, useCase, logger)
+	producer, err := meesage_broker.NewProducer(meesage_brokerConfig)
+	if err != nil {
+		return nil, err
+	}
+	commandPublisher := publisher.New(producer)
+	signUpHandler := command_handlers.NewSignUpCommandHandler(consumer, useCase, logger, commandPublisher)
 	commandsHandler, err := command_handlers.New(signUpHandler, logger)
 	if err != nil {
 		return nil, err
