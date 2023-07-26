@@ -17,6 +17,12 @@ func getRouter(handler *handlers.Handler, authService *query.CheckToken) http.Ha
 	v1.POST("signup", handler.SignUp())
 	v1.POST("signin", handler.SignIn())
 	v1.POST("todo-list", middleware.CheckToken(authService), handler.CreateTodoList())
+	v1.GET("todo-list", middleware.CheckToken(authService), handler.ListTodoList())
+	v1.DELETE("todo-list/:id", middleware.CheckToken(authService), handler.DeleteTodoList())
+	v1.PATCH("todo-list/:id", middleware.CheckToken(authService), handler.UpdateTodoList())
+	v1.POST("todo", middleware.CheckToken(authService), handler.CreateTodo())
+	v1.PATCH("todo/:id", middleware.CheckToken(authService), handler.UpdateTodo())
+	v1.DELETE("todo/:id", middleware.CheckToken(authService), handler.DeleteTodo())
 	return router
 }
 

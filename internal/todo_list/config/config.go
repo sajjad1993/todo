@@ -2,26 +2,24 @@ package config
 
 import (
 	"fmt"
+	"github.com/sajjad1993/todo/pkg/db"
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/spf13/viper"
-	"time"
 )
 
 type Config interface {
 	GetAmqpAddress() string
+	GetDatabaseDsn() string
+	GetDbDriver() string
 	GetUserServiceAddress() string
-	GetAuthServiceAddress() string
-
-	GetAccessSignKey() string
-	GetAccessJWTExp() time.Duration
+	GetToDoServiceAddress() string
 }
 type SampleConfig struct {
 	AmqpAddress        string `mapstructure:"AMQP_ADDRESS"`
+	DatabaseDsn        string `mapstructure:"DATABASE_DSN"`
+	DBDriver           string `mapstructure:"DATABASE_DRIVER"`
 	UserServiceAddress string `mapstructure:"USER_SERVICE_ADDRESS"`
-	AuthServiceAddress string `mapstructure:"AUTH_SERVICE_ADDRESS"`
-
-	AccessSignKey string        `mapstructure:"ACCESS_SIGN_KEY"`
-	AccessJWTExp  time.Duration `mapstructure:"ACCESS_JWT_EXP" `
+	ToDoServiceAddress string `mapstructure:"TODO_SERVICE_ADDRESS"`
 }
 
 func New() (Config, error) {
@@ -40,6 +38,10 @@ func New() (Config, error) {
 	}
 	return &c, nil
 }
+
+func NewDatabaseConfig(config Config) db.Config {
+	return config
+}
 func NewMessageBrokerConfig(config Config) meesage_broker.Config {
 	return config
 }
@@ -48,15 +50,15 @@ func (s SampleConfig) GetAmqpAddress() string {
 	return s.AmqpAddress
 }
 
-func (s SampleConfig) GetAccessSignKey() string {
-	return s.AccessSignKey
+func (s SampleConfig) GetDatabaseDsn() string {
+	return s.DatabaseDsn
 }
-func (s SampleConfig) GetAccessJWTExp() time.Duration {
-	return s.AccessJWTExp
+func (s SampleConfig) GetDbDriver() string {
+	return s.DBDriver
 }
 func (s SampleConfig) GetUserServiceAddress() string {
 	return s.UserServiceAddress
 }
-func (s SampleConfig) GetAuthServiceAddress() string {
-	return s.AuthServiceAddress
+func (s SampleConfig) GetToDoServiceAddress() string {
+	return s.ToDoServiceAddress
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/sajjad1993/todo/internal/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/internal/gateway/adapter/restapi/handlers"
+	"github.com/sajjad1993/todo/internal/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/internal/gateway/app"
 	"github.com/sajjad1993/todo/internal/gateway/app/command"
 	"github.com/sajjad1993/todo/internal/gateway/app/query"
@@ -32,10 +33,17 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		config.NewMessageBrokerConfig,
 		query.NewSignInQuery,
 		query.NewCheckTokenQuery,
+		query.NewListToDoList,
 		app.NewCommands,
 		app.NewQueries,
 		auth_client.New,
+		todo_list_client.New,
 		command.NewCreateTodoListCommand,
+		command.NewCreateTodoCommand,
+		command.NewDeleteTodoListCommand,
+		command.NewUpdateTodoListCommand,
+		command.NewUpdateTodoCommand,
+		command.NewDeleteTodoCommand,
 	)
 	return new(container.Container), nil
 }
