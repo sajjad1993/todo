@@ -5,6 +5,6 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN go build -o /app/service.gateway internal/gateway/main.go
+RUN go build -o /app/service.gateway services/gateway/main.go
 
 CMD ["/app/service.gateway"]

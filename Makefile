@@ -1,15 +1,15 @@
 gen-grpc:
 	@protoc \
-		--go_opt=paths=source_relative --go_out=internal/common/rpc/user \
-		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/common/rpc/user \
+		--go_opt=paths=source_relative --go_out=internal/pkg/rpc/proto/user \
+		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/pkg/rpc/proto/user \
 		api/protobuf/user.proto
 	@protoc \
-    		--go_opt=paths=source_relative --go_out=internal/common/rpc/auth \
-    		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/common/rpc/auth \
+    		--go_opt=paths=source_relative --go_out=internal/pkg/rpc/proto/auth \
+    		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/pkg/rpc/proto/auth \
     		api/protobuf/auth.proto
 	@protoc \
-    		--go_opt=paths=source_relative --go_out=internal/common/rpc/todo_list \
-    		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/common/rpc/todo_list \
+    		--go_opt=paths=source_relative --go_out=internal/pkg/rpc/proto/todo_list \
+    		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/pkg/rpc/proto/todo_list \
     		api/protobuf/todo_list.proto
 
 
