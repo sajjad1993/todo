@@ -3,14 +3,13 @@ package command_handlers
 import (
 	"context"
 	"encoding/json"
+	"github.com/sajjad1993/todo/internal/common/broker_utils"
 	"github.com/sajjad1993/todo/internal/todo_list/app"
 	"github.com/sajjad1993/todo/pkg/errs"
 	"github.com/sajjad1993/todo/pkg/log"
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"time"
 )
-
-const DeleteTodo = "DELETE_TODO"
 
 type deleteTodoMessage struct {
 	ID     uint
@@ -25,6 +24,11 @@ type DeleteTodoHandler struct {
 }
 
 func (h DeleteTodoHandler) Handle() error {
+
+	err := h.consumer.QueueDeclare(h.key)
+	if err != nil {
+		return err
+	}
 	messages, err := h.consumer.Consume(h.key)
 	h.logger.Infof("start listening to queue : %s", h.key)
 
@@ -63,10 +67,9 @@ func (h *DeleteTodoHandler) handleService(data []byte) error {
 
 func NewDeleteTodoHandler(consumer meesage_broker.Consumer, service app.UseCase, logger log.Logger) *DeleteTodoHandler {
 	timeout := 5 * time.Second //todo move to config
-	key := DeleteTodo
 	return &DeleteTodoHandler{
 		timeOut:  timeout,
-		key:      key,
+		key:      broker_utils.DeleteTodoListCommand,
 		consumer: consumer,
 		service:  service,
 		logger:   logger,

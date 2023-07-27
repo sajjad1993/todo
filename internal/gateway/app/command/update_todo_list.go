@@ -2,11 +2,10 @@ package command
 
 import (
 	"context"
+	"github.com/sajjad1993/todo/internal/common/broker_utils"
 	"github.com/sajjad1993/todo/internal/gateway/app/publisher"
 	"github.com/sajjad1993/todo/internal/gateway/domain/todo"
 )
-
-const UpdateTodoListCommand = "UPDATE_TODO_LIST"
 
 type UpdateTodoList struct {
 	Name    string
@@ -29,7 +28,7 @@ func (c *UpdateTodoList) Execute(ctx context.Context, todoList *todo.List) error
 
 func NewUpdateTodoListCommand(handler publisher.CommandPublisher) *UpdateTodoList {
 	return &UpdateTodoList{
-		Name:    UpdateTodoListCommand,
+		Name:    broker_utils.UpdateTodoListCommand,
 		handler: handler,
 	}
 }

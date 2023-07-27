@@ -151,7 +151,7 @@ func (h *Handler) CreateTodo() gin.HandlerFunc {
 			UserId:   token.ID,
 		}
 		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoEnt)
-		commandChanel := h.application.Commands.CreateTodoList.Execute(ctx, commandMessage)
+		commandChanel := h.application.Commands.CreateTodo.Execute(ctx, commandMessage)
 		select {
 		case <-ctx.Done():
 			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
