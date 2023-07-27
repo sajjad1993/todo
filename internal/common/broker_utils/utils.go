@@ -5,11 +5,15 @@ type DeleteTodoListMessage struct {
 	UserID uint
 }
 
-const SignUp = "SIGNUP"
-const DoneSignUp = "SIGNED_UP"
-const CreateTodoListCommand = "CREATE_TODO_LIST"
-const DoneCreateTodoListCommand = "CREATED_TODO_LIST"
-const CreateTodoCommand = "CREATE_TODO"
-const DONECreateTodoCommand = "CREATED_TODO"
-const DeleteTodoListCommand = "DELETE_TODO_LIST"
-const DoneDeleteTodoListCommand = "DELETED_TODO_LIST"
+const (
+	SignUp                    = "SIGNUP"
+	DoneSignUp                = "SIGNED_UP"
+	CreateTodoListCommand     = "CREATE_TODO_LIST"
+	DoneCreateTodoListCommand = "CREATED_TODO_LIST"
+	CreateTodoCommand         = "CREATE_TODO"
+	DONECreateTodoCommand     = "CREATED_TODO"
+	DeleteTodoListCommand     = "DELETE_TODO_LIST"
+	DoneDeleteTodoListCommand = "DELETED_TODO_LIST"
+	UpdateTodoListCommand     = "UPDATE_TODO_LIST"
+	UpdateTodo                = "UPDATE_TODO"
+)

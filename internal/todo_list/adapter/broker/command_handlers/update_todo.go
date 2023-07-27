@@ -3,6 +3,7 @@ package command_handlers
 import (
 	"context"
 	"encoding/json"
+	"github.com/sajjad1993/todo/internal/common/broker_utils"
 	"github.com/sajjad1993/todo/internal/todo_list/app"
 	"github.com/sajjad1993/todo/internal/todo_list/domain/todo"
 	"github.com/sajjad1993/todo/pkg/errs"
@@ -10,8 +11,6 @@ import (
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"time"
 )
-
-const UpdateTodo = "UPDATE_TODO"
 
 type UpdateTodoHandler struct {
 	timeOut  time.Duration
@@ -22,6 +21,10 @@ type UpdateTodoHandler struct {
 }
 
 func (h UpdateTodoHandler) Handle() error {
+	err := h.consumer.QueueDeclare(h.key)
+	if err != nil {
+		return err
+	}
 	messages, err := h.consumer.Consume(h.key)
 	h.logger.Infof("start listening to queue : %s", h.key)
 
@@ -60,10 +63,9 @@ func (h *UpdateTodoHandler) handleService(data []byte) error {
 
 func NewUpdateTodoHandler(consumer meesage_broker.Consumer, service app.UseCase, logger log.Logger) *UpdateTodoHandler {
 	timeout := 30 * time.Second //todo move to config
-	key := UpdateTodo
 	return &UpdateTodoHandler{
 		timeOut:  timeout,
-		key:      key,
+		key:      broker_utils.UpdateTodo,
 		consumer: consumer,
 		service:  service,
 		logger:   logger,

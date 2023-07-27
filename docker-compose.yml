@@ -1,0 +1,108 @@
+version: '3'
+
+services:
+  tododb:
+    image: postgres:13.4
+    container_name: tododb
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - /var/lib/tododb_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - todonet
+    ports:
+      - 5439:5432
+    env_file:
+      - app.env
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - todonet
+    ports:
+      - "5678:5672"
+      - "15678:15672"
+  todo:
+    image: todo/todo
+    container_name: todo
+    build:
+      context: .
+      dockerfile: Dockerfile-todo
+    volumes:
+      - ../storage:/app/storage
+    networks:
+      - todonet
+    depends_on:
+      - tododb
+    ports:
+      - 3030:3030
+
+
+
+  auth:
+    image: todo/auth
+    container_name: auth
+    build:
+      context: .
+      dockerfile: Dockerfile-auth
+    volumes:
+      - ../storage:/app/storage
+    networks:
+      - todonet
+    depends_on:
+      - rabbitmq
+      - tododb
+      - user
+    ports:
+      - 6060:6060
+    env_file:
+      - app.env
+
+  user:
+    image: todo/user
+    container_name: user
+    build:
+      context: .
+      dockerfile: Dockerfile-user
+    volumes:
+      - ../storage:/app/storage
+    networks:
+      - todonet
+    depends_on:
+      - rabbitmq
+      - tododb
+    ports:
+      - 4040:4040
+    env_file:
+      - app.env
+
+  gateway:
+    image: todo/gateway
+    container_name: gateway
+    build:
+      context: .
+      dockerfile: Dockerfile-gateway
+    volumes:
+      - ../storage:/app/storage
+    networks:
+      - todonet
+    depends_on:
+      - rabbitmq
+      - tododb
+    ports:
+      - 5050:5050
+    env_file:
+      - app.env
+
+volumes:
+  tododb_data:
+  storage:
+
+networks:
+  todonet:
+    driver: bridge
