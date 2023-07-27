@@ -1,6 +1,7 @@
 package meesage_broker
 
 import (
+	"github.com/sajjad1993/todo/pkg/utils"
 	"github.com/streadway/amqp"
 )
 
@@ -52,22 +53,23 @@ func (r *Rabbit) Consume(key string) (<-chan amqp.Delivery, error) {
 }
 
 func NewProducer(config Config) (Producer, error) {
-	conn, err := amqp.Dial(config.GetAmqpAddress())
+	connection, err := utils.RetryConnect[Broker](config.GetRetryAttemptsConnect(), config.GetRetryDelayConnect(), config.GetAmqpAddress(), connect)
 	if err != nil {
 		return nil, err
 	}
-	ch, err := conn.Channel()
-	if err != nil {
-		return nil, err
-	}
-	r := Rabbit{
-		channel: ch,
-	}
-	return &r, nil
+	return connection, nil
 }
 
 func NewConsumer(config Config) (Consumer, error) {
-	conn, err := amqp.Dial(config.GetAmqpAddress())
+	connection, err := utils.RetryConnect[Broker](config.GetRetryAttemptsConnect(), config.GetRetryDelayConnect(), config.GetAmqpAddress(), connect)
+	if err != nil {
+		return nil, err
+	}
+	return connection, nil
+}
+
+func connect(address string) (Broker, error) {
+	conn, err := amqp.Dial(address)
 	if err != nil {
 		return nil, err
 	}
