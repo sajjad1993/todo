@@ -1,4 +1,4 @@
-gen-grpc:
+fgen-grpc:
 	@protoc \
 		--go_opt=paths=source_relative --go_out=internal/common/rpc/user \
 		--go-grpc_opt=paths=source_relative --go-grpc_out=internal/common/rpc/user \

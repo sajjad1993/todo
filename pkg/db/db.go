@@ -14,7 +14,6 @@ import (
 
 type Config interface {
 	GetDatabaseDsn() string
-	GetDbDriver() string
 }
 
 func NewDb(cfg Config) (*gorm.DB, error) {

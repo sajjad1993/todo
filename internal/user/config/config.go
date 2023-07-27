@@ -10,13 +10,11 @@ import (
 type Config interface {
 	GetAmqpAddress() string
 	GetDatabaseDsn() string
-	GetDbDriver() string
 	GetUserServiceAddress() string
 }
 type SampleConfig struct {
 	AmqpAddress        string `mapstructure:"AMQP_ADDRESS"`
 	DatabaseDsn        string `mapstructure:"DATABASE_DSN"`
-	DBDriver           string `mapstructure:"DATABASE_DRIVER"`
 	UserServiceAddress string `mapstructure:"USER_SERVICE_ADDRESS"`
 }
 
@@ -50,9 +48,6 @@ func (s SampleConfig) GetAmqpAddress() string {
 
 func (s SampleConfig) GetDatabaseDsn() string {
 	return s.DatabaseDsn
-}
-func (s SampleConfig) GetDbDriver() string {
-	return s.DBDriver
 }
 func (s SampleConfig) GetUserServiceAddress() string {
 	return s.UserServiceAddress
