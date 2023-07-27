@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package todo_list;
+
+option go_package = ".;rpc";
+
+
+service TodoService {
+  rpc ListTodoList(ListTodoListRequest) returns (ListTodoListResponse) {}
+}
+
+message ListTodoListRequest{
+  uint64 UserID = 1;
+}
+
+message ListTodoListResponse {
+  repeated TodoList TodoLists = 1;
+}
+
+
+message TodoList{
+  uint64 ID = 4;
+  string Name  = 1;
+  string Description  = 2;
+  repeated TodoItem TodoItems = 3;
+}
+message TodoItem{
+  uint64 ID = 4;
+  string Title  = 1;
+  uint64 Priority  = 2;
+}

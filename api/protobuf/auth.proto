@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = ".;rpc";
+
+
+
+service AuthService {
+  rpc SignIn(SignInRequest) returns (SignInResponse) {}
+  rpc CheckToken(CheckTokenRequest) returns (CheckTokenResponse) {}
+}
+
+message SignInRequest{
+  string Email = 1;
+  string Password = 2;
+}
+
+message SignInResponse {
+  string AccessToken = 1;
+}
+
+message CheckTokenRequest {
+  string AccessToken = 1;
+}
+
+message CheckTokenResponse {
+  Token Token = 1;
+}
+
+message Token{
+  string Email =1;
+  string Name = 2;
+  uint64 ID = 3;
+}

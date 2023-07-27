@@ -1,0 +1,854 @@
+{
+	"info": {
+		"_postman_id": "ebc8e0b2-08cb-4090-b792-373a5722d39b",
+		"name": "todo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1095321"
+	},
+	"item": [
+		{
+			"name": "V1",
+			"item": [
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "sign up",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\":\"sajjad@sajjad.com\",\n    \"name\":\"sajjad\",\n    \"password\":\"sajjad123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/signup",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"signup"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "auth",
+					"item": [
+						{
+							"name": "sign in",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    var jsonData = JSON.parse(responseBody);",
+											"    postman.setEnvironmentVariable(\"TOKEN\", jsonData.results.token);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic2FqamFkIiwiZW1haWwiOiJzYWpqYWRAc2FqamFkLmNvbSIsIklEIjoiMSIsImV4cCI6MTcwMzI5MTczOX0.RRKVGFq2hkbMQmFnXFeWGEqjxxwnkMDCqX8zAmZ_79U",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\":\"sajjad@sajjad.com\",\n    \"password\":\"sajjad123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/signin",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"signin"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "todo-list",
+					"item": [
+						{
+							"name": "Crreate",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":\"todo-list1\",\n    \"description\":\"it is tod do list 1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/todo-list",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"todo-list"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						},
+						{
+							"name": "List",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/todo-list",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"todo-list"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/todo-list/:id",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"todo-list",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						},
+						{
+							"name": "Update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":\"todo-list1-updated\",\n    \"description\":\"it is tod do list 1 is updated\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/todo-list/:id",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"todo-list",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "todo",
+					"item": [
+						{
+							"name": "Crreate",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"todo-3\",\n    \"priority\":7,\n    \"list_id\":4\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/todo",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"todo"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						},
+						{
+							"name": "Update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\":\"todo-1 updated\",\n    \"priority\":11\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/todo/:id",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"todo",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{LOCAL_SERVER}}/api/v1/todo/:id",
+									"host": [
+										"{{LOCAL_SERVER}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"todo",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "request otp Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"identifier\":\"sajjad@sajjad.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{LOCAL_SERVER}}:{{LOCAL_PORT}}/api/v1/request-otp/",
+											"host": [
+												"{{LOCAL_SERVER}}"
+											],
+											"port": "{{LOCAL_PORT}}",
+											"path": [
+												"api",
+												"v1",
+												"request-otp",
+												""
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 27 May 2023 09:24:37 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "142"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"request otp\",\n    \"results\": {\n        \"hash\": \"d2f42fd3-eb6c-48b6-a157-8a0f02402dc6\",\n        \"id\": \"f1983547-9130-4d92-88f8-23508176b172\"\n    },\n    \"succeed\": true\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
