@@ -20,6 +20,9 @@ func New(logger log.Logger, consumer meesage_broker.Consumer,
 	createTodoList *command.CreateTodoList,
 	createTodo *command.CreateTodo,
 	deleteTodoList *command.DeleteTodoList,
+	deleteTodo *command.DeleteTodo,
+	updateTodoList *command.UpdateTodoList,
+	updateTodo *command.UpdateTodo,
 
 ) (*CommandsHandlers, error) {
 	commandHandlers := &CommandsHandlers{
@@ -27,31 +30,52 @@ func New(logger log.Logger, consumer meesage_broker.Consumer,
 	}
 
 	signUpHandler := NewCommandHandler(consumer, signUp, logger)
-	commandHandlers.handlers = append(commandHandlers.handlers, signUpHandler)
 	err := signUpHandler.Handle()
 	if err != nil {
 		return nil, err
 	}
 	createTodoListHandler := NewCommandHandler(consumer, createTodoList, logger)
-	commandHandlers.handlers = append(commandHandlers.handlers, signUpHandler)
 	err = createTodoListHandler.Handle()
 	if err != nil {
 		return nil, err
 	}
 
 	createTodoHandler := NewCommandHandler(consumer, createTodo, logger)
-	commandHandlers.handlers = append(commandHandlers.handlers, createTodoHandler)
 	err = createTodoHandler.Handle()
 	if err != nil {
 		return nil, err
 	}
 
 	deleteTodoListHandler := NewCommandHandler(consumer, deleteTodoList, logger)
-	commandHandlers.handlers = append(commandHandlers.handlers, deleteTodoListHandler)
 	err = deleteTodoListHandler.Handle()
 	if err != nil {
 		return nil, err
 	}
+
+	deleteTodoHandler := NewCommandHandler(consumer, deleteTodo, logger)
+	err = deleteTodoHandler.Handle()
+	if err != nil {
+		return nil, err
+	}
+	updateTodoListHandler := NewCommandHandler(consumer, updateTodoList, logger)
+	err = updateTodoListHandler.Handle()
+	if err != nil {
+		return nil, err
+	}
+	updateTodoHandler := NewCommandHandler(consumer, updateTodo, logger)
+	err = updateTodoHandler.Handle()
+	if err != nil {
+		return nil, err
+	}
+	commandHandlers.handlers = append(commandHandlers.handlers,
+		signUpHandler,
+		createTodoHandler,
+		deleteTodoListHandler,
+		deleteTodoHandler,
+		signUpHandler,
+		updateTodoListHandler,
+		updateTodoHandler,
+	)
 
 	return commandHandlers, nil
 }

@@ -1,9 +1,13 @@
 package command_handlers
 
-import "github.com/sajjad1993/todo/pkg/log"
+import (
+	"github.com/sajjad1993/todo/pkg/log"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
+	"golang.org/x/net/context"
+)
 
 type CommandHandler interface {
-	Handle() error
+	Handle(ctx context.Context, data []byte) (*command_utils.CommandMessage, error)
 }
 
 type CommandsHandler struct {
@@ -29,30 +33,6 @@ func New(createTodoListHandler *CreateTodoListHandler, CreateTodoHandler *Create
 		UpdateTodoHandler:     UpdateTodoHandler,
 		DeleteTodoHandler:     DeleteTodoHandler,
 		logger:                logger,
-	}
-	err := handlers.CreateTodoListHandler.Handle()
-	if err != nil {
-		return nil, err
-	}
-	err = handlers.CreateTodoHandler.Handle()
-	if err != nil {
-		return nil, err
-	}
-	err = handlers.DeleteTodoListHandler.Handle()
-	if err != nil {
-		return nil, err
-	}
-	err = handlers.UpdateTodoListHandler.Handle()
-	if err != nil {
-		return nil, err
-	}
-	err = handlers.UpdateTodoHandler.Handle()
-	if err != nil {
-		return nil, err
-	}
-	err = handlers.DeleteTodoHandler.Handle()
-	if err != nil {
-		return nil, err
 	}
 	return handlers, nil
 }
