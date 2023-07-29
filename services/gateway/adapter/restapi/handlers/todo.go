@@ -64,6 +64,7 @@ func (h *Handler) ListTodoList() gin.HandlerFunc {
 			response.ListToDOListResponse{Lists: result.FromEntity(todos)}, nil)
 	}
 }
+
 func (h *Handler) UpdateTodoList() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req request.TodoList
@@ -90,12 +91,19 @@ func (h *Handler) UpdateTodoList() gin.HandlerFunc {
 			Description: req.Description,
 			UserID:      token.ID,
 		}
-		err = h.application.Commands.UpdateTodoList.Execute(ctx, todoListEnt)
-		if err != nil {
-			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-			return
+		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoListEnt)
+		commandChanel := h.application.Commands.UpdateTodoList.Execute(ctx, commandMessage)
+		select {
+		case <-ctx.Done():
+			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
+		case message := <-commandChanel:
+			err = message.GetError()
+			if err != nil {
+				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+				return
+			}
+			rest.OKResponse(ctx)
 		}
-		rest.OKResponse(ctx)
 	}
 }
 func (h *Handler) DeleteTodoList() gin.HandlerFunc {
@@ -193,18 +201,25 @@ func (h *Handler) UpdateTodo() gin.HandlerFunc {
 			Priority: req.Priority,
 			UserId:   token.ID,
 		}
-		err = h.application.Commands.UpdateTodo.Execute(ctx, todoEnt)
-		if err != nil {
-			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-			return
+		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoEnt)
+		commandChanel := h.application.Commands.UpdateTodo.Execute(ctx, commandMessage)
+		select {
+		case <-ctx.Done():
+			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
+		case message := <-commandChanel:
+			err := message.GetError()
+			if err != nil {
+				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+				return
+			}
+			rest.OKResponse(ctx)
 		}
-		rest.OKResponse(ctx)
 	}
 }
 func (h *Handler) DeleteTodo() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		param := ctx.Param("id")
-		todoId, err := strconv.Atoi(param)
+		todoListId, err := strconv.Atoi(param)
 
 		if err != nil {
 			rest.FailedResponse(ctx, http.StatusBadRequest, err.Error())
@@ -215,11 +230,22 @@ func (h *Handler) DeleteTodo() gin.HandlerFunc {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
 		}
-		err = h.application.Commands.DeleteTodo.Execute(ctx, uint(todoId), token.ID)
-		if err != nil {
-			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-			return
+		message := broker_utils.DeleteTodoListMessage{
+			ID:     uint(todoListId),
+			UserID: token.ID,
 		}
-		rest.OKResponse(ctx)
+		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, message)
+		commandChanel := h.application.Commands.DeleteTodo.Execute(ctx, commandMessage)
+		select {
+		case <-ctx.Done():
+			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
+		case message := <-commandChanel:
+			err := message.GetError()
+			if err != nil {
+				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+				return
+			}
+			rest.OKResponse(ctx)
+		}
 	}
 }

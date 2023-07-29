@@ -2,34 +2,46 @@ package command
 
 import (
 	"context"
+	"fmt"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
 	"github.com/sajjad1993/todo/services/gateway/app/publisher"
-	"github.com/sajjad1993/todo/services/gateway/domain/todo"
 )
 
-const UpdateTodoCommand = "UPDATE_TODO"
-
 type UpdateTodo struct {
-	Name    string
-	handler publisher.CommandPublisher
+	Name      string
+	DoneName  string
+	publisher publisher.CommandPublisher
+	*ChannelCommandManager
 }
 
+func (c *UpdateTodo) GetDoneName() string {
+	return c.DoneName
+}
 func (c *UpdateTodo) GetName() string {
 	return c.Name
 }
 
-func (c *UpdateTodo) Execute(ctx context.Context, todoItem *todo.Item) error {
-
-	err := c.handler.Publish(ctx, todoItem, c.GetName())
-	if err != nil {
-		//we can retry that .
-		return err
-	}
-	return nil
+func (c *UpdateTodo) Execute(ctx context.Context, message *command_utils.CommandMessage) <-chan *command_utils.CommandMessage {
+	commandChannel := c.SetCommandChannel(message)
+	go func() {
+		err := c.publisher.Publish(ctx, message, c.GetName())
+		if err != nil {
+			//we can retry that .
+			errMessage := command_utils.NewCommandMessage("", command_utils.GetCommandStatusFromError(err),
+				nil)
+			c.DeleteCommandChannel(errMessage)
+		}
+		fmt.Printf("new message has sent from gateway into %s queue \n ", c.GetName())
+	}()
+	return commandChannel
 }
 
-func NewUpdateTodoCommand(handler publisher.CommandPublisher) *UpdateTodo {
+func NewUpdateTodoCommand(publisher publisher.CommandPublisher) *UpdateTodo {
 	return &UpdateTodo{
-		Name:    UpdateTodoCommand,
-		handler: handler,
+		Name:                  broker_utils.UpdateTodo,
+		DoneName:              broker_utils.DoneUpdateTodo,
+		publisher:             publisher,
+		ChannelCommandManager: newCommandChannelManager(),
 	}
 }

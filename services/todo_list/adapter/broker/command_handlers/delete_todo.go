@@ -2,76 +2,40 @@ package command_handlers
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/sajjad1993/todo/pkg/errs"
 	"github.com/sajjad1993/todo/pkg/log"
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/todo_list/app"
-	"time"
 )
 
-type deleteTodoMessage struct {
-	ID     uint
-	UserID uint
-}
 type DeleteTodoHandler struct {
-	timeOut  time.Duration
-	key      string
-	consumer meesage_broker.Consumer
-	service  app.UseCase
-	logger   log.Logger
+	service app.UseCase
+	queue   *QueueManager
+	logger  log.Logger
 }
 
-func (h DeleteTodoHandler) Handle() error {
-
-	err := h.consumer.QueueDeclare(h.key)
+func (h DeleteTodoHandler) Handle(ctx context.Context, data []byte) (*command_utils.CommandMessage, error) {
+	ent, message, err := serialize[broker_utils.DeleteTodoMessage](data)
 	if err != nil {
-		return err
+		return message, err
 	}
-	messages, err := h.consumer.Consume(h.key)
-	h.logger.Infof("start listening to queue : %s", h.key)
-
-	if err != nil {
-		return errs.NewInternalError(err.Error())
-	}
-	go func() {
-		for message := range messages {
-			h.logger.Infof("new message : %s", message.Body)
-			go func(data []byte) {
-				err = h.handleService(data)
-				if err != nil {
-					h.logger.Error(err)
-				}
-
-			}(message.Body)
-		}
-	}()
-	return nil
+	commandError := h.service.DeleteToDoItem(ctx, ent.ID, ent.UserID)
+	return message, commandError
 }
 
-func (h *DeleteTodoHandler) handleService(data []byte) error {
-	var message deleteTodoMessage
-	err := json.Unmarshal(data, &message)
-	if err != nil {
-		return err
-	}
-	ctx, _ := context.WithTimeout(context.Background(), h.timeOut)
+func NewDeleteTodoHandler(consumer meesage_broker.Consumer, service app.UseCase, logger log.Logger, publisher publisher.CommandPublisher) (*DeleteTodoHandler, error) {
+	queue := NewQueueManger(consumer, logger, publisher, broker_utils.DeleteTodoItemCommand, broker_utils.DoneDeleteTodoItemCommand)
 
-	err = h.service.DeleteToDoItem(ctx, message.ID, message.UserID)
+	handler := &DeleteTodoHandler{
+		queue:   queue,
+		service: service,
+		logger:  logger,
+	}
+	err := queue.Consume(handler)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-}
-
-func NewDeleteTodoHandler(consumer meesage_broker.Consumer, service app.UseCase, logger log.Logger) *DeleteTodoHandler {
-	timeout := 5 * time.Second //todo move to config
-	return &DeleteTodoHandler{
-		timeOut:  timeout,
-		key:      broker_utils.DeleteTodoListCommand,
-		consumer: consumer,
-		service:  service,
-		logger:   logger,
-	}
+	return handler, nil
 }
