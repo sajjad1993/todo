@@ -46,12 +46,30 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		return nil, err
 	}
 	commandPublisher := publisher.New(producer)
-	createTodoListHandler := command_handlers.NewCreateTodoListHandler(consumer, useCase, logger, commandPublisher)
-	createTodoHandler := command_handlers.NewCreateTodoHandler(consumer, useCase, logger, commandPublisher)
-	deleteTodoListHandler := command_handlers.NewDeleteTodoListHandler(consumer, useCase, logger, commandPublisher)
-	updateTodoListHandler := command_handlers.NewUpdateTodoListHandler(consumer, useCase, logger)
-	updateTodoHandler := command_handlers.NewUpdateTodoHandler(consumer, useCase, logger)
-	deleteTodoHandler := command_handlers.NewDeleteTodoHandler(consumer, useCase, logger)
+	createTodoListHandler, err := command_handlers.NewCreateTodoListHandler(consumer, useCase, logger, commandPublisher)
+	if err != nil {
+		return nil, err
+	}
+	createTodoHandler, err := command_handlers.NewCreateTodoHandler(consumer, useCase, logger, commandPublisher)
+	if err != nil {
+		return nil, err
+	}
+	deleteTodoListHandler, err := command_handlers.NewDeleteTodoListHandler(consumer, useCase, logger, commandPublisher)
+	if err != nil {
+		return nil, err
+	}
+	updateTodoListHandler, err := command_handlers.NewUpdateTodoListHandler(consumer, useCase, logger, commandPublisher)
+	if err != nil {
+		return nil, err
+	}
+	updateTodoHandler, err := command_handlers.NewUpdateTodoHandler(consumer, useCase, logger, commandPublisher)
+	if err != nil {
+		return nil, err
+	}
+	deleteTodoHandler, err := command_handlers.NewDeleteTodoHandler(consumer, useCase, logger, commandPublisher)
+	if err != nil {
+		return nil, err
+	}
 	commandsHandler, err := command_handlers.New(createTodoListHandler, createTodoHandler, deleteTodoListHandler, updateTodoListHandler, updateTodoHandler, deleteTodoHandler, logger)
 	if err != nil {
 		return nil, err

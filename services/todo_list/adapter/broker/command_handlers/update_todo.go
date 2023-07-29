@@ -2,72 +2,41 @@ package command_handlers
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/sajjad1993/todo/pkg/errs"
 	"github.com/sajjad1993/todo/pkg/log"
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/todo_list/app"
 	"github.com/sajjad1993/todo/services/todo_list/domain/todo"
-	"time"
 )
 
 type UpdateTodoHandler struct {
-	timeOut  time.Duration
-	key      string
-	consumer meesage_broker.Consumer
-	service  app.UseCase
-	logger   log.Logger
+	service app.UseCase
+	queue   *QueueManager
+	logger  log.Logger
 }
 
-func (h UpdateTodoHandler) Handle() error {
-	err := h.consumer.QueueDeclare(h.key)
+func (h UpdateTodoHandler) Handle(ctx context.Context, data []byte) (*command_utils.CommandMessage, error) {
+	ent, message, err := serialize[todo.Item](data)
 	if err != nil {
-		return err
+		return message, err
 	}
-	messages, err := h.consumer.Consume(h.key)
-	h.logger.Infof("start listening to queue : %s", h.key)
-
-	if err != nil {
-		return errs.NewInternalError(err.Error())
-	}
-	go func() {
-		for message := range messages {
-			h.logger.Infof("new message : %s", message.Body)
-			go func(data []byte) {
-				err = h.handleService(data)
-				if err != nil {
-					h.logger.Error(err)
-				}
-
-			}(message.Body)
-		}
-	}()
-	return nil
+	commandError := h.service.UpdateToDoItem(ctx, ent.ID, ent)
+	return message, commandError
 }
 
-func (h *UpdateTodoHandler) handleService(data []byte) error {
-	var ent todo.Item
-	err := json.Unmarshal(data, &ent)
-	if err != nil {
-		return err
-	}
-	ctx, _ := context.WithTimeout(context.Background(), h.timeOut)
+func NewUpdateTodoHandler(consumer meesage_broker.Consumer, service app.UseCase, logger log.Logger, publisher publisher.CommandPublisher) (*UpdateTodoHandler, error) {
+	queue := NewQueueManger(consumer, logger, publisher, broker_utils.UpdateTodo, broker_utils.DoneUpdateTodo)
 
-	err = h.service.UpdateToDoItem(ctx, ent.ID, &ent)
+	handler := &UpdateTodoHandler{
+		queue:   queue,
+		service: service,
+		logger:  logger,
+	}
+	err := queue.Consume(handler)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-}
-
-func NewUpdateTodoHandler(consumer meesage_broker.Consumer, service app.UseCase, logger log.Logger) *UpdateTodoHandler {
-	timeout := 30 * time.Second //todo move to config
-	return &UpdateTodoHandler{
-		timeOut:  timeout,
-		key:      broker_utils.UpdateTodo,
-		consumer: consumer,
-		service:  service,
-		logger:   logger,
-	}
+	return handler, nil
 }
