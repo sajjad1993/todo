@@ -6,7 +6,7 @@ import (
 )
 
 type ListToDoList struct {
-	todoRepo todo.Repository
+	todoRepo todo.Reader
 }
 
 func (q *ListToDoList) Run(ctx context.Context, userID uint) ([]*todo.List, error) {
@@ -18,7 +18,7 @@ func (q *ListToDoList) Run(ctx context.Context, userID uint) ([]*todo.List, erro
 	return todos, nil
 }
 
-func NewListToDoList(todoRepo todo.Repository) *ListToDoList {
+func NewListToDoList(todoRepo todo.Reader) *ListToDoList {
 	return &ListToDoList{
 		todoRepo: todoRepo,
 	}

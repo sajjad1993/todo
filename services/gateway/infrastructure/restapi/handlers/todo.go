@@ -5,9 +5,9 @@ import (
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
 	"github.com/sajjad1993/todo/pkg/rest"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/presenter/request"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/presenter/response"
 	"github.com/sajjad1993/todo/services/gateway/domain/todo"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/presenter/request"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/presenter/response"
 	"net/http"
 	"strconv"
 )

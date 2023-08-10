@@ -13,13 +13,13 @@ import (
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/handlers"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
 	"github.com/sajjad1993/todo/services/gateway/app/command"
 	"github.com/sajjad1993/todo/services/gateway/app/query"
 	"github.com/sajjad1993/todo/services/gateway/config"
 	"github.com/sajjad1993/todo/services/gateway/container"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/handlers"
 )
 
 // Injectors from wire.go:
@@ -51,11 +51,11 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	}
 	signIn := query.NewSignInQuery(repository)
 	checkToken := query.NewCheckTokenQuery(repository)
-	todoRepository, err := todo_list_client.New(logger, configConfig)
+	reader, err := todo_list_client.New(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
-	listToDoList := query.NewListToDoList(todoRepository)
+	listToDoList := query.NewListToDoList(reader)
 	queries := app.NewQueries(signIn, checkToken, listToDoList)
 	application := app.New(commands, queries)
 	handler := handlers.NewHandler(application)

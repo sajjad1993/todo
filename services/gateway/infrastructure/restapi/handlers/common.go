@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/sajjad1993/todo/pkg/errs"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/presenter"
 	"github.com/sajjad1993/todo/services/gateway/domain/user"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/presenter"
 	"net/http"
 )
 

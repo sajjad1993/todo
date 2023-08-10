@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
+	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
 	"github.com/sajjad1993/todo/services/gateway/app/publisher"
 )
 
@@ -12,7 +13,7 @@ type SignUp struct {
 	Name      string
 	DoneName  string
 	publisher publisher.CommandPublisher
-	*ChannelCommandManager
+	*channel_manager.ChannelCommandManager
 }
 
 func (c *SignUp) GetName() string {
@@ -44,6 +45,6 @@ func NewSignUpCommand(publisher publisher.CommandPublisher) *SignUp {
 		Name:                  broker_utils.SignUp,
 		DoneName:              broker_utils.DoneSignUp,
 		publisher:             publisher,
-		ChannelCommandManager: newCommandChannelManager(),
+		ChannelCommandManager: channel_manager.NewCommandChannelManager(),
 	}
 }

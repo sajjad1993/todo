@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
+	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
 	"github.com/sajjad1993/todo/services/gateway/app/publisher"
 )
 
@@ -12,7 +13,7 @@ type CreateTodo struct {
 	Name      string
 	DoneName  string
 	publisher publisher.CommandPublisher
-	*ChannelCommandManager
+	*channel_manager.ChannelCommandManager
 }
 
 func (c *CreateTodo) GetDoneName() string {
@@ -42,6 +43,6 @@ func NewCreateTodoCommand(publisher publisher.CommandPublisher) *CreateTodo {
 		Name:                  broker_utils.CreateTodoCommand,
 		DoneName:              broker_utils.DONECreateTodoCommand,
 		publisher:             publisher,
-		ChannelCommandManager: newCommandChannelManager(),
+		ChannelCommandManager: channel_manager.NewCommandChannelManager(),
 	}
 }

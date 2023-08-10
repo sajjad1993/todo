@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
+	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
 	"github.com/sajjad1993/todo/services/gateway/app/publisher"
 )
 
@@ -12,7 +13,7 @@ type DeleteTodoList struct {
 	Name      string
 	DoneName  string
 	publisher publisher.CommandPublisher
-	*ChannelCommandManager
+	*channel_manager.ChannelCommandManager
 }
 
 func (c *DeleteTodoList) GetName() string {
@@ -41,6 +42,6 @@ func NewDeleteTodoListCommand(publisher publisher.CommandPublisher) *DeleteTodoL
 		Name:                  broker_utils.DeleteTodoListCommand,
 		DoneName:              broker_utils.DoneDeleteTodoListCommand,
 		publisher:             publisher,
-		ChannelCommandManager: newCommandChannelManager(),
+		ChannelCommandManager: channel_manager.NewCommandChannelManager(),
 	}
 }

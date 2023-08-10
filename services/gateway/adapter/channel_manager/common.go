@@ -1,4 +1,4 @@
-package command
+package channel_manager
 
 import (
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
@@ -27,7 +27,7 @@ func (c *ChannelCommandManager) DeleteCommandChannel(commandMessage *command_uti
 	close(ch)
 }
 
-func newCommandChannelManager() *ChannelCommandManager {
+func NewCommandChannelManager() *ChannelCommandManager {
 	mapChannel := make(map[string]chan *command_utils.CommandMessage)
 	return &ChannelCommandManager{
 		commandChannels: mapChannel,

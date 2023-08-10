@@ -11,13 +11,13 @@ import (
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/handlers"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
 	"github.com/sajjad1993/todo/services/gateway/app/command"
 	"github.com/sajjad1993/todo/services/gateway/app/query"
 	"github.com/sajjad1993/todo/services/gateway/config"
 	"github.com/sajjad1993/todo/services/gateway/container"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/handlers"
 )
 
 // InitializeContainer  is dependency injected form of having *service.Container

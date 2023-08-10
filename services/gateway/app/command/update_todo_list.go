@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
+	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
 	"github.com/sajjad1993/todo/services/gateway/app/publisher"
 )
 
@@ -12,7 +13,7 @@ type UpdateTodoList struct {
 	Name      string
 	DoneName  string
 	publisher publisher.CommandPublisher
-	*ChannelCommandManager
+	*channel_manager.ChannelCommandManager
 }
 
 func (c *UpdateTodoList) GetDoneName() string {
@@ -41,6 +42,6 @@ func NewUpdateTodoListCommand(publisher publisher.CommandPublisher) *UpdateTodoL
 		Name:                  broker_utils.UpdateTodoListCommand,
 		DoneName:              broker_utils.DoneUpdateTodoListCommand,
 		publisher:             publisher,
-		ChannelCommandManager: newCommandChannelManager(),
+		ChannelCommandManager: channel_manager.NewCommandChannelManager(),
 	}
 }

@@ -3,9 +3,9 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sajjad1993/todo/pkg/rest"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/presenter"
 	"github.com/sajjad1993/todo/services/gateway/app/query"
 	"github.com/sajjad1993/todo/services/gateway/domain/auth"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/presenter"
 	"net/http"
 	"strings"
 )

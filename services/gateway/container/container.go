@@ -4,10 +4,10 @@ import (
 	"github.com/sajjad1993/todo/pkg/log"
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/handlers"
 	"github.com/sajjad1993/todo/services/gateway/app"
 	"github.com/sajjad1993/todo/services/gateway/app/publisher"
 	"github.com/sajjad1993/todo/services/gateway/config"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/handlers"
 )
 
 type Container struct {

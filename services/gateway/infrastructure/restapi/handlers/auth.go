@@ -3,9 +3,9 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sajjad1993/todo/pkg/rest"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/presenter/request"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/presenter/response"
 	"github.com/sajjad1993/todo/services/gateway/domain/user"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/presenter/request"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/presenter/response"
 	"net/http"
 )
 
