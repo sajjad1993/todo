@@ -2,47 +2,51 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
-	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
-	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
-	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
+	"github.com/sajjad1993/todo/services/gateway/domain/todo"
 )
 
-type UpdateTodo struct {
-	Name      string
-	DoneName  string
-	publisher publisher.CommandPublisher
-	*channel_manager.ChannelCommandManager
+type UpdateTodoItem struct {
+	Todo     todo.Item
+	Name     string
+	DoneName string
 }
 
-func (c *UpdateTodo) GetDoneName() string {
-	return c.DoneName
-}
-func (c *UpdateTodo) GetName() string {
+func (c *UpdateTodoItem) GetName() string {
 	return c.Name
 }
 
-func (c *UpdateTodo) Execute(ctx context.Context, message *command_utils.CommandMessage) <-chan *command_utils.CommandMessage {
-	commandChannel := c.SetCommandChannel(message)
-	go func() {
-		err := c.publisher.Publish(ctx, message, c.GetName())
-		if err != nil {
-			//we can retry that .
-			errMessage := command_utils.NewCommandMessage("", command_utils.GetCommandStatusFromError(err),
-				nil)
-			c.DeleteCommandChannel(errMessage)
-		}
-		fmt.Printf("new message has sent from gateway into %s queue \n ", c.GetName())
-	}()
-	return commandChannel
+func (c *UpdateTodoItem) GetDoneName() string {
+	return c.DoneName
 }
 
-func NewUpdateTodoCommand(publisher publisher.CommandPublisher) *UpdateTodo {
-	return &UpdateTodo{
-		Name:                  broker_utils.UpdateTodo,
-		DoneName:              broker_utils.DoneUpdateTodo,
-		publisher:             publisher,
-		ChannelCommandManager: channel_manager.NewCommandChannelManager(),
+type UpdateTodoItemHandler CommandHandler[UpdateTodoItem]
+
+type updateTodoItemHandler struct {
+	todoWriter todo.Writer
+}
+
+func (c *updateTodoItemHandler) Handle(ctx context.Context, cmd UpdateTodoItem) error {
+	err := c.todoWriter.CreateItem(ctx, &cmd.Todo)
+	if err != nil {
+		return err
 	}
+	return nil
+}
+
+func NewUpdateTodoItemCommand(todoWriter todo.Writer) UpdateTodoItemHandler {
+
+	return &updateTodoItemHandler{
+		todoWriter: todoWriter,
+	}
+}
+
+func NewUpdateTodoItem(todo todo.Item) *UpdateTodoItem {
+
+	return &UpdateTodoItem{
+		Name:     broker_utils.UpdateTodo,
+		DoneName: broker_utils.DoneUpdateTodo,
+		Todo:     todo,
+	}
+
 }

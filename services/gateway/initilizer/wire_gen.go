@@ -12,8 +12,8 @@ import (
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
-	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
 	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
+	"github.com/sajjad1993/todo/services/gateway/adapter/consumer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/controller/commands"
 	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
@@ -47,9 +47,9 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	createTodoListHandler := command.NewCreateTodoListCommand(todoWriter)
 	updateTodoListHandler := command.NewUpdateTodoListCommand(todoWriter)
 	deleteTodoListHandler := command.NewDeleteTodoListCommand(todoWriter)
-	updateTodo := command.NewUpdateTodoCommand(commandPublisher)
+	updateTodoItemHandler := command.NewUpdateTodoItemCommand(todoWriter)
 	deleteTodoItemHandler := command.NewDeleteTodoItemCommand(todoWriter)
-	appCommands := app.NewCommands(signUpHandler, createTodoHandler, createTodoListHandler, updateTodoListHandler, deleteTodoListHandler, updateTodo, deleteTodoItemHandler)
+	appCommands := app.NewCommands(signUpHandler, createTodoHandler, createTodoListHandler, updateTodoListHandler, deleteTodoListHandler, updateTodoItemHandler, deleteTodoItemHandler)
 	repository, err := auth_client.New(logger, configConfig)
 	if err != nil {
 		return nil, err
@@ -66,11 +66,11 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	channelCommandManager := channel_manager.NewCommandChannelManager()
 	commandsCommands := commands.NewCommandController(appCommands, channelCommandManager)
 	handler := handlers.NewHandler(application, commandsCommands)
-	consumer, err := meesage_broker.NewConsumer(meesage_brokerConfig)
+	meesage_brokerConsumer, err := meesage_broker.NewConsumer(meesage_brokerConfig)
 	if err != nil {
 		return nil, err
 	}
-	commandsHandlers, err := command_handlers.New(logger, consumer, channelCommandManager)
+	commandsHandlers, err := consumer.New(logger, meesage_brokerConsumer, channelCommandManager)
 	if err != nil {
 		return nil, err
 	}

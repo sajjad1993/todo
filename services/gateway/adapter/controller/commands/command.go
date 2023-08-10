@@ -14,7 +14,7 @@ type Commands struct {
 	manager *channel_manager.ChannelCommandManager
 }
 
-func (c *Commands) setContext(ctx context.Context, cmd command.CMD) (<-chan *command_utils.CommandMessage, context.Context) {
+func (c *Commands) setContext(ctx context.Context, cmd command.Command) (<-chan *command_utils.CommandMessage, context.Context) {
 	commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, nil)
 	commandChannel := c.manager.SetCommandChannel(commandMessage)
 	ctx = context.WithValue(ctx, command_utils.RequestHashKey, commandMessage.Hash)

@@ -62,3 +62,17 @@ func (c *Commands) UpdateTodoList(ctx context.Context, todoList *todo.List) erro
 	}()
 	return getCommandResult(ctx, commandChannel)
 }
+
+func (c *Commands) UpdateTodoItem(ctx context.Context, todoItem *todo.Item) error {
+	cmd := command.NewUpdateTodoItem(*todoItem)
+	commandChannel, ctx := c.setContext(ctx, cmd)
+	go func() {
+		err := c.app.UpdateTodo.Handle(ctx, *cmd)
+		if err != nil {
+			errMessage := command_utils.NewCommandMessage("", command_utils.GetCommandStatusFromError(err),
+				nil)
+			c.manager.DeleteCommandChannel(errMessage)
+		}
+	}()
+	return getCommandResult(ctx, commandChannel)
+}

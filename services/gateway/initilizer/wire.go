@@ -10,8 +10,8 @@ import (
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
-	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
 	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
+	"github.com/sajjad1993/todo/services/gateway/adapter/consumer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/controller/commands"
 	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
@@ -46,9 +46,9 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		command.NewCreateTodoCommand,
 		command.NewDeleteTodoListCommand,
 		command.NewUpdateTodoListCommand,
-		command.NewUpdateTodoCommand,
+		command.NewUpdateTodoItemCommand,
 		command.NewDeleteTodoItemCommand,
-		command_handlers.New,
+		consumer.New,
 		commands.NewCommandController,
 		channel_manager.NewCommandChannelManager,
 		producer.NewUserProducer,

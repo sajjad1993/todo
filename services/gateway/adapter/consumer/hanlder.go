@@ -1,4 +1,4 @@
-package command_handlers
+package consumer
 
 import (
 	"github.com/sajjad1993/todo/pkg/log"
