@@ -10,10 +10,9 @@ import (
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
-	"github.com/sajjad1993/todo/services/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
 	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
-	"github.com/sajjad1993/todo/services/gateway/adapter/controller"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller/commands"
 	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
@@ -28,8 +27,6 @@ import (
 func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	wire.Build(
 		container.NewContainer,
-		broker.New,
-
 		config.New,
 		log.NewLogger,
 		command.NewSignUpCommand,
@@ -52,7 +49,7 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		command.NewUpdateTodoCommand,
 		command.NewDeleteTodoCommand,
 		command_handlers.New,
-		controller.NewCommandController,
+		commands.NewCommandController,
 		channel_manager.NewCommandChannelManager,
 		producer.NewUserProducer,
 		publisher.New,

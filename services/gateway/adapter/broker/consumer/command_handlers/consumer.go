@@ -8,13 +8,11 @@ import (
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
 	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
-	"github.com/sajjad1993/todo/services/gateway/app"
 )
 
 type ConsumeCommandHandler struct {
 	key      string
 	consumer meesage_broker.Consumer
-	command  app.Command
 	logger   log.Logger
 	manager  *channel_manager.ChannelCommandManager
 }
@@ -52,7 +50,6 @@ func (h *ConsumeCommandHandler) handleService(data []byte) error {
 		return err
 	}
 	fmt.Printf("new message has reccived from %s queue by gateway  and the message is %v \n ", h.key, message)
-	h.command.DeleteCommandChannel(&message)
 	if err != nil {
 		return err
 	}
@@ -63,12 +60,11 @@ func (h *ConsumeCommandHandler) handleService(data []byte) error {
 	return nil
 }
 
-func NewCommandHandler(consumer meesage_broker.Consumer, command app.Command, logger log.Logger, manager *channel_manager.ChannelCommandManager) CommandHandler {
+func NewCommandHandler(consumer meesage_broker.Consumer, logger log.Logger, manager *channel_manager.ChannelCommandManager, doneKey string) CommandHandler {
 
 	return &ConsumeCommandHandler{
-		key:      command.GetDoneName(),
+		key:      doneKey,
 		consumer: consumer,
-		command:  command,
 		logger:   logger,
 		manager:  manager,
 	}

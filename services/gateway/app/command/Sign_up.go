@@ -3,7 +3,6 @@ package command
 import (
 	"context"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
-	"github.com/sajjad1993/todo/services/gateway/app"
 	"github.com/sajjad1993/todo/services/gateway/domain/user"
 )
 
@@ -21,7 +20,7 @@ func (c *SignUp) GetDoneName() string {
 	return c.DoneName
 }
 
-type SignUpHandler app.CommandHandler[SignUp]
+type SignUpHandler CommandHandler[SignUp]
 
 type signUpHandler struct {
 	userWriter user.Writer

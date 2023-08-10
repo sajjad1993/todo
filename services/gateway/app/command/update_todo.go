@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
-	"github.com/sajjad1993/todo/services/gateway/app/publisher"
 )
 
 type UpdateTodo struct {

@@ -12,10 +12,9 @@ import (
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
-	"github.com/sajjad1993/todo/services/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
 	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
-	"github.com/sajjad1993/todo/services/gateway/adapter/controller"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller/commands"
 	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
@@ -43,14 +42,13 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	commandPublisher := publisher.New(meesage_brokerProducer)
 	writer := producer.NewUserProducer(commandPublisher)
 	signUpHandler := command.NewSignUpCommand(writer)
-	publisherCommandPublisher := broker.New(meesage_brokerProducer)
-	createTodo := command.NewCreateTodoCommand(publisherCommandPublisher)
-	createTodoList := command.NewCreateTodoListCommand(publisherCommandPublisher)
-	updateTodoList := command.NewUpdateTodoListCommand(publisherCommandPublisher)
-	deleteTodoList := command.NewDeleteTodoListCommand(publisherCommandPublisher)
-	updateTodo := command.NewUpdateTodoCommand(publisherCommandPublisher)
-	deleteTodo := command.NewDeleteTodoCommand(publisherCommandPublisher)
-	commands := app.NewCommands(signUpHandler, createTodo, createTodoList, updateTodoList, deleteTodoList, updateTodo, deleteTodo)
+	createTodo := command.NewCreateTodoCommand(commandPublisher)
+	createTodoList := command.NewCreateTodoListCommand(commandPublisher)
+	updateTodoList := command.NewUpdateTodoListCommand(commandPublisher)
+	deleteTodoList := command.NewDeleteTodoListCommand(commandPublisher)
+	updateTodo := command.NewUpdateTodoCommand(commandPublisher)
+	deleteTodo := command.NewDeleteTodoCommand(commandPublisher)
+	appCommands := app.NewCommands(signUpHandler, createTodo, createTodoList, updateTodoList, deleteTodoList, updateTodo, deleteTodo)
 	repository, err := auth_client.New(logger, configConfig)
 	if err != nil {
 		return nil, err
@@ -63,19 +61,19 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	}
 	listToDoList := query.NewListToDoList(reader)
 	queries := app.NewQueries(signIn, checkToken, listToDoList)
-	application := app.New(commands, queries)
+	application := app.New(appCommands, queries)
 	channelCommandManager := channel_manager.NewCommandChannelManager()
-	controllerCommands := controller.NewCommandController(commands, channelCommandManager)
-	handler := handlers.NewHandler(application, controllerCommands)
+	commandsCommands := commands.NewCommandController(appCommands, channelCommandManager)
+	handler := handlers.NewHandler(application, commandsCommands)
 	consumer, err := meesage_broker.NewConsumer(meesage_brokerConfig)
 	if err != nil {
 		return nil, err
 	}
-	commandsHandlers, err := command_handlers.New(logger, consumer, createTodoList, createTodo, deleteTodoList, deleteTodo, updateTodoList, updateTodo, channelCommandManager)
+	commandsHandlers, err := command_handlers.New(logger, consumer, channelCommandManager)
 	if err != nil {
 		return nil, err
 	}
-	containerContainer, err := container.NewContainer(logger, configConfig, application, publisherCommandPublisher, meesage_brokerProducer, handler, commandsHandlers)
+	containerContainer, err := container.NewContainer(logger, configConfig, application, commandPublisher, meesage_brokerProducer, handler, commandsHandlers)
 	if err != nil {
 		return nil, err
 	}
