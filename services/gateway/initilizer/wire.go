@@ -47,7 +47,7 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		command.NewDeleteTodoListCommand,
 		command.NewUpdateTodoListCommand,
 		command.NewUpdateTodoCommand,
-		command.NewDeleteTodoCommand,
+		command.NewDeleteTodoItemCommand,
 		command_handlers.New,
 		commands.NewCommandController,
 		channel_manager.NewCommandChannelManager,

@@ -22,9 +22,13 @@ func (u *TodoWriter) CreateItem(ctx context.Context, todo *todo.Item) error {
 	return u.produce(ctx, commandMessage)
 }
 
-func (u *TodoWriter) DeleteItem(ctx context.Context, itemId uint) error {
-	//TODO implement me
-	panic("implement me")
+func (u *TodoWriter) DeleteItem(ctx context.Context, itemId, userId uint) error {
+	message := broker_utils.DeleteTodoMessage{
+		ID:     itemId,
+		UserID: userId,
+	}
+	commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, message)
+	return u.produce(ctx, commandMessage)
 }
 
 func (u *TodoWriter) UpdateItem(ctx context.Context, id uint, todo *todo.Item) error {

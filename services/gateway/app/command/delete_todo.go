@@ -2,46 +2,53 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
-	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
-	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
-	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
+	"github.com/sajjad1993/todo/services/gateway/domain/todo"
 )
 
-type DeleteTodo struct {
-	Name      string
-	DoneName  string
-	publisher publisher.CommandPublisher
-	*channel_manager.ChannelCommandManager
+type DeleteTodoItem struct {
+	ID       uint
+	UserID   uint
+	Name     string
+	DoneName string
 }
 
-func (c *DeleteTodo) GetName() string {
+func (c *DeleteTodoItem) GetName() string {
 	return c.Name
 }
-func (c *DeleteTodo) GetDoneName() string {
+
+func (c *DeleteTodoItem) GetDoneName() string {
 	return c.DoneName
 }
-func (c *DeleteTodo) Execute(ctx context.Context, message *command_utils.CommandMessage) <-chan *command_utils.CommandMessage {
-	commandChannel := c.SetCommandChannel(message)
-	go func() {
-		err := c.publisher.Publish(ctx, message, c.GetName())
-		if err != nil {
-			//we can retry that .
-			errMessage := command_utils.NewCommandMessage("", command_utils.GetCommandStatusFromError(err),
-				nil)
-			c.DeleteCommandChannel(errMessage)
-		}
-		fmt.Printf("new message has sent from gateway into %s queue \n ", c.GetName())
-	}()
-	return commandChannel
+
+type DeleteTodoItemHandler CommandHandler[DeleteTodoItem]
+
+type deleteTodoItemHandler struct {
+	todoWriter todo.Writer
 }
 
-func NewDeleteTodoCommand(publisher publisher.CommandPublisher) *DeleteTodo {
-	return &DeleteTodo{
-		Name:                  broker_utils.DeleteTodoItemCommand,
-		DoneName:              broker_utils.DoneDeleteTodoItemCommand,
-		publisher:             publisher,
-		ChannelCommandManager: channel_manager.NewCommandChannelManager(),
+func (c *deleteTodoItemHandler) Handle(ctx context.Context, cmd DeleteTodoItem) error {
+	err := c.todoWriter.DeleteItem(ctx, cmd.ID, cmd.UserID)
+	if err != nil {
+		return err
 	}
+	return nil
+}
+
+func NewDeleteTodoItemCommand(todoWriter todo.Writer) DeleteTodoItemHandler {
+
+	return &deleteTodoItemHandler{
+		todoWriter: todoWriter,
+	}
+}
+
+func NewDeleteTodoItem(id, userId uint) *DeleteTodoItem {
+
+	return &DeleteTodoItem{
+		Name:     broker_utils.DeleteTodoItemCommand,
+		DoneName: broker_utils.DoneDeleteTodoItemCommand,
+		ID:       id,
+		UserID:   userId,
+	}
+
 }

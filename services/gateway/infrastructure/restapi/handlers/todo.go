@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
 	"github.com/sajjad1993/todo/pkg/rest"
 	"github.com/sajjad1993/todo/services/gateway/domain/todo"
@@ -205,22 +204,12 @@ func (h *Handler) DeleteTodo() gin.HandlerFunc {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
 		}
-		message := broker_utils.DeleteTodoListMessage{
-			ID:     uint(todoListId),
-			UserID: token.ID,
+
+		err = h.controller.DeleteTodoList(ctx, uint(todoListId), token.ID)
+		if err != nil {
+			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+			return
 		}
-		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, message)
-		commandChanel := h.application.Commands.DeleteTodo.Execute(ctx, commandMessage)
-		select {
-		case <-ctx.Done():
-			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
-		case message := <-commandChanel:
-			err := message.GetError()
-			if err != nil {
-				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-				return
-			}
-			rest.OKResponse(ctx)
-		}
+		rest.OKResponse(ctx)
 	}
 }
