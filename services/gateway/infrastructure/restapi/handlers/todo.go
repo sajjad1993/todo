@@ -83,19 +83,12 @@ func (h *Handler) UpdateTodoList() gin.HandlerFunc {
 			Description: req.Description,
 			UserID:      token.ID,
 		}
-		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoListEnt)
-		commandChanel := h.application.Commands.UpdateTodoList.Execute(ctx, commandMessage)
-		select {
-		case <-ctx.Done():
-			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
-		case message := <-commandChanel:
-			err = message.GetError()
-			if err != nil {
-				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-				return
-			}
-			rest.OKResponse(ctx)
+		err = h.controller.UpdateTodoList(ctx, todoListEnt)
+		if err != nil {
+			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+			return
 		}
+		rest.OKResponse(ctx)
 	}
 }
 func (h *Handler) DeleteTodoList() gin.HandlerFunc {

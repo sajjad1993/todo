@@ -15,7 +15,7 @@ type Commands struct {
 	CreateTodoList command.CreateTodoListHandler
 	DeleteTodoList command.DeleteTodoListHandler
 	CreateTodo     command.CreateTodoHandler
-	UpdateTodoList *command.UpdateTodoList
+	UpdateTodoList command.UpdateTodoListHandler
 	UpdateTodo     *command.UpdateTodo
 	DeleteTodo     command.DeleteTodoItemHandler
 }
@@ -34,7 +34,7 @@ func New(commands *Commands, queries *Queries) *Application {
 }
 
 func NewCommands(SignUp command.SignUpHandler, CreateTodo command.CreateTodoHandler,
-	createTodoList command.CreateTodoListHandler, UpdateTodoList *command.UpdateTodoList,
+	createTodoList command.CreateTodoListHandler, UpdateTodoList command.UpdateTodoListHandler,
 	DeleteTodoList command.DeleteTodoListHandler, UpdateTodo *command.UpdateTodo,
 	DeleteTodo command.DeleteTodoItemHandler) *Commands {
 	return &Commands{

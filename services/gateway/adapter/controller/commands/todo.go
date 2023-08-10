@@ -48,3 +48,17 @@ func (c *Commands) DeleteTodoList(ctx context.Context, id, userId uint) error {
 	}()
 	return getCommandResult(ctx, commandChannel)
 }
+
+func (c *Commands) UpdateTodoList(ctx context.Context, todoList *todo.List) error {
+	cmd := command.NewUpdateTodoList(*todoList)
+	commandChannel, ctx := c.setContext(ctx, cmd)
+	go func() {
+		err := c.app.UpdateTodoList.Handle(ctx, *cmd)
+		if err != nil {
+			errMessage := command_utils.NewCommandMessage("", command_utils.GetCommandStatusFromError(err),
+				nil)
+			c.manager.DeleteCommandChannel(errMessage)
+		}
+	}()
+	return getCommandResult(ctx, commandChannel)
+}

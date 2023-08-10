@@ -36,9 +36,9 @@ func (u *TodoWriter) UpdateItem(ctx context.Context, id uint, todo *todo.Item) e
 	panic("implement me")
 }
 
-func (u *TodoWriter) UpdateList(ctx context.Context, id uint, todo *todo.List) error {
-	//TODO implement me
-	panic("implement me")
+func (u *TodoWriter) UpdateList(ctx context.Context, id uint, todoList *todo.List) error {
+	commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoList)
+	return u.produce(ctx, commandMessage)
 }
 
 func (u *TodoWriter) DeleteList(ctx context.Context, listId uint, userId uint) error {
