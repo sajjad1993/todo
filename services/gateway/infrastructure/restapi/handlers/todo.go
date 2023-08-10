@@ -29,19 +29,12 @@ func (h *Handler) CreateTodoList() gin.HandlerFunc {
 			Description: req.Description,
 			UserID:      token.ID,
 		}
-		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoListEnt)
-		commandChanel := h.application.Commands.CreateTodoList.Execute(ctx, commandMessage)
-		select {
-		case <-ctx.Done():
-			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
-		case message := <-commandChanel:
-			err := message.GetError()
-			if err != nil {
-				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-				return
-			}
-			rest.OKResponse(ctx)
+		err = h.controller.CreateTodoList(ctx, *todoListEnt)
+		if err != nil {
+			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+			return
 		}
+		rest.OKResponse(ctx)
 	}
 }
 

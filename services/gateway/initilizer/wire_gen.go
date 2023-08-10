@@ -43,12 +43,13 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	writer := producer.NewUserProducer(commandPublisher)
 	signUpHandler := command.NewSignUpCommand(writer)
 	createTodo := command.NewCreateTodoCommand(commandPublisher)
-	createTodoList := command.NewCreateTodoListCommand(commandPublisher)
+	todoWriter := producer.NewTodoProducer(commandPublisher)
+	createTodoListHandler := command.NewCreateTodoListCommand(todoWriter)
 	updateTodoList := command.NewUpdateTodoListCommand(commandPublisher)
 	deleteTodoList := command.NewDeleteTodoListCommand(commandPublisher)
 	updateTodo := command.NewUpdateTodoCommand(commandPublisher)
 	deleteTodo := command.NewDeleteTodoCommand(commandPublisher)
-	appCommands := app.NewCommands(signUpHandler, createTodo, createTodoList, updateTodoList, deleteTodoList, updateTodo, deleteTodo)
+	appCommands := app.NewCommands(signUpHandler, createTodo, createTodoListHandler, updateTodoList, deleteTodoList, updateTodo, deleteTodo)
 	repository, err := auth_client.New(logger, configConfig)
 	if err != nil {
 		return nil, err

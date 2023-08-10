@@ -52,6 +52,7 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		commands.NewCommandController,
 		channel_manager.NewCommandChannelManager,
 		producer.NewUserProducer,
+		producer.NewTodoProducer,
 		publisher.New,
 	)
 	return new(container.Container), nil
