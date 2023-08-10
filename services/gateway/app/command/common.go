@@ -6,6 +6,7 @@ import (
 )
 
 type CMD interface {
+	//todo convert to command after all ...
 	GetName() string
 	GetDoneName() string
 }

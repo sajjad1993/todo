@@ -2,6 +2,7 @@ package producer
 
 import (
 	"context"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/domain/todo"
@@ -17,8 +18,8 @@ func (u *TodoWriter) CreateList(ctx context.Context, todoList *todo.List) error 
 }
 
 func (u *TodoWriter) CreateItem(ctx context.Context, todo *todo.Item) error {
-	//TODO implement me
-	panic("implement me")
+	commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todo)
+	return u.produce(ctx, commandMessage)
 }
 
 func (u *TodoWriter) DeleteItem(ctx context.Context, itemId uint) error {
@@ -36,9 +37,13 @@ func (u *TodoWriter) UpdateList(ctx context.Context, id uint, todo *todo.List) e
 	panic("implement me")
 }
 
-func (u *TodoWriter) DeleteList(ctx context.Context, listId uint) error {
-	//TODO implement me
-	panic("implement me")
+func (u *TodoWriter) DeleteList(ctx context.Context, listId uint, userId uint) error {
+	message := broker_utils.DeleteTodoListMessage{
+		ID:     listId,
+		UserID: userId,
+	}
+	commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, message)
+	return u.produce(ctx, commandMessage)
 }
 
 func (u *TodoWriter) Create(ctx context.Context, todoEnt *todo.List) error {

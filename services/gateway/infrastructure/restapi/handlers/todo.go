@@ -29,7 +29,7 @@ func (h *Handler) CreateTodoList() gin.HandlerFunc {
 			Description: req.Description,
 			UserID:      token.ID,
 		}
-		err = h.controller.CreateTodoList(ctx, *todoListEnt)
+		err = h.controller.CreateTodoList(ctx, todoListEnt)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
@@ -113,23 +113,12 @@ func (h *Handler) DeleteTodoList() gin.HandlerFunc {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
 		}
-		message := broker_utils.DeleteTodoListMessage{
-			ID:     uint(todoListId),
-			UserID: token.ID,
+		err = h.controller.DeleteTodoList(ctx, uint(todoListId), token.ID)
+		if err != nil {
+			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+			return
 		}
-		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, message)
-		commandChanel := h.application.Commands.DeleteTodoList.Execute(ctx, commandMessage)
-		select {
-		case <-ctx.Done():
-			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
-		case message := <-commandChanel:
-			err := message.GetError()
-			if err != nil {
-				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-				return
-			}
-			rest.OKResponse(ctx)
-		}
+		rest.OKResponse(ctx)
 	}
 }
 
@@ -151,19 +140,12 @@ func (h *Handler) CreateTodo() gin.HandlerFunc {
 			ListId:   req.ListID,
 			UserId:   token.ID,
 		}
-		commandMessage := command_utils.NewCommandMessage("", command_utils.SuccessStatus, todoEnt)
-		commandChanel := h.application.Commands.CreateTodo.Execute(ctx, commandMessage)
-		select {
-		case <-ctx.Done():
-			rest.FailedResponse(ctx, http.StatusGatewayTimeout, "")
-		case message := <-commandChanel:
-			err := message.GetError()
-			if err != nil {
-				rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
-				return
-			}
-			rest.OKResponse(ctx)
+		err = h.controller.CreateTodoItem(ctx, todoEnt)
+		if err != nil {
+			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
+			return
 		}
+		rest.OKResponse(ctx)
 	}
 }
 

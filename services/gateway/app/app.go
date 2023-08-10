@@ -11,13 +11,13 @@ type Application struct {
 }
 
 type Commands struct {
+	SignUp         command.SignUpHandler
 	CreateTodoList command.CreateTodoListHandler
-	DeleteTodoList *command.DeleteTodoList
+	DeleteTodoList command.DeleteTodoListHandler
+	CreateTodo     command.CreateTodoHandler
 	UpdateTodoList *command.UpdateTodoList
-	CreateTodo     *command.CreateTodo
 	UpdateTodo     *command.UpdateTodo
 	DeleteTodo     *command.DeleteTodo
-	SignUp         command.SignUpHandler
 }
 
 type Queries struct {
@@ -33,9 +33,9 @@ func New(commands *Commands, queries *Queries) *Application {
 	}
 }
 
-func NewCommands(SignUp command.SignUpHandler, CreateTodo *command.CreateTodo,
+func NewCommands(SignUp command.SignUpHandler, CreateTodo command.CreateTodoHandler,
 	createTodoList command.CreateTodoListHandler, UpdateTodoList *command.UpdateTodoList,
-	DeleteTodoList *command.DeleteTodoList, UpdateTodo *command.UpdateTodo,
+	DeleteTodoList command.DeleteTodoListHandler, UpdateTodo *command.UpdateTodo,
 	DeleteTodo *command.DeleteTodo) *Commands {
 	return &Commands{
 		//t-odo
