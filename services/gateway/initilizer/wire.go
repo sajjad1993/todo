@@ -8,9 +8,13 @@ import (
 	"github.com/google/wire"
 	"github.com/sajjad1993/todo/pkg/log"
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker"
 	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
+	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller"
+	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
 	"github.com/sajjad1993/todo/services/gateway/app/command"
@@ -48,6 +52,10 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		command.NewUpdateTodoCommand,
 		command.NewDeleteTodoCommand,
 		command_handlers.New,
+		controller.NewCommandController,
+		channel_manager.NewCommandChannelManager,
+		producer.NewUserProducer,
+		publisher.New,
 	)
 	return new(container.Container), nil
 }

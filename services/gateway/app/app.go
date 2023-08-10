@@ -14,6 +14,9 @@ type Command interface {
 	SetCommandChannel(commandMessage *command_utils.CommandMessage) chan *command_utils.CommandMessage
 	DeleteCommandChannel(commandMessage *command_utils.CommandMessage)
 }
+type CommandHandler[C any] interface {
+	Handle(ctx context.Context, cmd C) error
+}
 type Application struct {
 	Commands *Commands
 	Queries  *Queries
@@ -26,7 +29,7 @@ type Commands struct {
 	CreateTodo     *command.CreateTodo
 	UpdateTodo     *command.UpdateTodo
 	DeleteTodo     *command.DeleteTodo
-	SignUp         *command.SignUp
+	SignUp         command.SignUpHandler
 }
 
 type Queries struct {
@@ -42,7 +45,7 @@ func New(commands *Commands, queries *Queries) *Application {
 	}
 }
 
-func NewCommands(SignUp *command.SignUp, CreateTodo *command.CreateTodo,
+func NewCommands(SignUp command.SignUpHandler, CreateTodo *command.CreateTodo,
 	createTodoList *command.CreateTodoList, UpdateTodoList *command.UpdateTodoList,
 	DeleteTodoList *command.DeleteTodoList, UpdateTodo *command.UpdateTodo,
 	DeleteTodo *command.DeleteTodo) *Commands {
@@ -54,6 +57,7 @@ func NewCommands(SignUp *command.SignUp, CreateTodo *command.CreateTodo,
 
 		CreateTodoList: createTodoList,
 		DeleteTodoList: DeleteTodoList,
+
 		UpdateTodoList: UpdateTodoList,
 
 		//user
