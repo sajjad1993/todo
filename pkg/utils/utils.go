@@ -18,7 +18,7 @@ func RetryConnect[T any](attempts uint, delay time.Duration, address string, fn 
 			return connection, nil
 		}
 		seconds := delay.Seconds()
-		fmt.Printf("we cant connect to %s so we retry it after %.1f secconds \n", address, seconds)
+		fmt.Printf("we cant connect to %s so we retry it after %.1f secconds  : %s \n", address, seconds, err)
 		time.Sleep(delay)
 	}
 	return connection, err
