@@ -11,6 +11,7 @@ var ErrNoSuchKey = errors.New("key not found")
 var ErrNotFoundError = errors.New("not found error")
 var ErrInternalError = errors.New("internal error")
 var ErrDuplicateEntity = errors.New("5|duplicate entity")
+var ErrTimeOut = errors.New("5|time out")
 
 func NewValidationError(errMsg string) error {
 	return fmt.Errorf("%w|%s", ErrValidation, errMsg)
@@ -32,4 +33,7 @@ func NewInternalError(errMsg string) error {
 }
 func NewDuplicateEntity(errMsg string) error {
 	return fmt.Errorf("%w|%s", ErrDuplicateEntity, errMsg)
+}
+func NewTimeOut(errMsg string) error {
+	return fmt.Errorf("%w|%s", ErrTimeOut, errMsg)
 }

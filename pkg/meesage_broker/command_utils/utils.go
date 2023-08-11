@@ -16,6 +16,8 @@ const (
 	UNAuthorizedStatus        CommandStatus = "unauthorized"
 	InternalServerErrorStatus CommandStatus = "internal server error"
 )
+const RequestHashKey = "request-hash"
+const CommandNameKey = "command-name"
 
 func GetCommandStatusFromError(err error) CommandStatus {
 	if err == nil {
@@ -57,6 +59,10 @@ func NewCommandMessage(message string, status CommandStatus, data interface{}) *
 }
 func (c *CommandMessage) setHash() {
 	c.Hash = uuid.NewString()
+}
+
+func (c *CommandMessage) UpdateHash(hash string) {
+	c.Hash = hash
 }
 
 func (c *CommandMessage) GetError() error {

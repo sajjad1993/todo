@@ -2,17 +2,14 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"github.com/sajjad1993/todo/pkg/meesage_broker/broker_utils"
-	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
-	"github.com/sajjad1993/todo/services/gateway/app/publisher"
+	"github.com/sajjad1993/todo/services/gateway/domain/user"
 )
 
 type SignUp struct {
-	Name      string
-	DoneName  string
-	publisher publisher.CommandPublisher
-	*ChannelCommandManager
+	User     user.User
+	Name     string
+	DoneName string
 }
 
 func (c *SignUp) GetName() string {
@@ -23,27 +20,33 @@ func (c *SignUp) GetDoneName() string {
 	return c.DoneName
 }
 
-func (c *SignUp) Execute(ctx context.Context, message *command_utils.CommandMessage) <-chan *command_utils.CommandMessage {
-	commandChannel := c.SetCommandChannel(message)
-	go func() {
-		err := c.publisher.Publish(ctx, message, c.GetName())
-		if err != nil {
-			//we can retry that .
-			errMessage := command_utils.NewCommandMessage("", command_utils.GetCommandStatusFromError(err),
-				nil)
-			c.DeleteCommandChannel(errMessage)
-		}
-		fmt.Printf("new message has sent from gateway into %s queue \n ", c.GetName())
-	}()
-	return commandChannel
+type SignUpHandler CommandHandler[SignUp]
+
+type signUpHandler struct {
+	userWriter user.Writer
 }
 
-func NewSignUpCommand(publisher publisher.CommandPublisher) *SignUp {
+func (c *signUpHandler) Handle(ctx context.Context, cmd SignUp) error {
+	err := c.userWriter.Create(ctx, &cmd.User)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewSignUpCommand(userWriter user.Writer) SignUpHandler {
+
+	return &signUpHandler{
+		userWriter: userWriter,
+	}
+}
+
+func NewSignUp(user user.User) *SignUp {
 
 	return &SignUp{
-		Name:                  broker_utils.SignUp,
-		DoneName:              broker_utils.DoneSignUp,
-		publisher:             publisher,
-		ChannelCommandManager: newCommandChannelManager(),
+		Name:     broker_utils.SignUp,
+		DoneName: broker_utils.DoneSignUp,
+		User:     user,
 	}
+
 }

@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi"
 	"github.com/sajjad1993/todo/services/gateway/container"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi"
 	"github.com/sajjad1993/todo/services/gateway/initilizer"
 	"os"
 	"os/signal"

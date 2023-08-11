@@ -1,32 +1,23 @@
 package app
 
 import (
-	"context"
-	"github.com/sajjad1993/todo/pkg/meesage_broker/command_utils"
 	"github.com/sajjad1993/todo/services/gateway/app/command"
 	"github.com/sajjad1993/todo/services/gateway/app/query"
 )
 
-type Command interface {
-	GetName() string
-	GetDoneName() string
-	Execute(ctx context.Context, message *command_utils.CommandMessage) <-chan *command_utils.CommandMessage
-	SetCommandChannel(commandMessage *command_utils.CommandMessage) chan *command_utils.CommandMessage
-	DeleteCommandChannel(commandMessage *command_utils.CommandMessage)
-}
 type Application struct {
 	Commands *Commands
 	Queries  *Queries
 }
 
 type Commands struct {
-	CreateTodoList *command.CreateTodoList
-	DeleteTodoList *command.DeleteTodoList
-	UpdateTodoList *command.UpdateTodoList
-	CreateTodo     *command.CreateTodo
-	UpdateTodo     *command.UpdateTodo
-	DeleteTodo     *command.DeleteTodo
-	SignUp         *command.SignUp
+	SignUp         command.SignUpHandler
+	CreateTodoList command.CreateTodoListHandler
+	DeleteTodoList command.DeleteTodoListHandler
+	CreateTodo     command.CreateTodoHandler
+	UpdateTodoList command.UpdateTodoListHandler
+	UpdateTodo     command.UpdateTodoItemHandler
+	DeleteTodo     command.DeleteTodoItemHandler
 }
 
 type Queries struct {
@@ -42,10 +33,10 @@ func New(commands *Commands, queries *Queries) *Application {
 	}
 }
 
-func NewCommands(SignUp *command.SignUp, CreateTodo *command.CreateTodo,
-	createTodoList *command.CreateTodoList, UpdateTodoList *command.UpdateTodoList,
-	DeleteTodoList *command.DeleteTodoList, UpdateTodo *command.UpdateTodo,
-	DeleteTodo *command.DeleteTodo) *Commands {
+func NewCommands(SignUp command.SignUpHandler, CreateTodo command.CreateTodoHandler,
+	createTodoList command.CreateTodoListHandler, UpdateTodoList command.UpdateTodoListHandler,
+	DeleteTodoList command.DeleteTodoListHandler, UpdateTodo command.UpdateTodoItemHandler,
+	DeleteTodo command.DeleteTodoItemHandler) *Commands {
 	return &Commands{
 		//t-odo
 		CreateTodo: CreateTodo,
@@ -54,6 +45,7 @@ func NewCommands(SignUp *command.SignUp, CreateTodo *command.CreateTodo,
 
 		CreateTodoList: createTodoList,
 		DeleteTodoList: DeleteTodoList,
+
 		UpdateTodoList: UpdateTodoList,
 
 		//user

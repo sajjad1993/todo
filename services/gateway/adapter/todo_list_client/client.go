@@ -49,7 +49,7 @@ func toEntity(response *rpc.ListTodoListResponse) []*todo.List {
 	}
 	return result
 }
-func New(logger log.Logger, config config.Config) (todo.Repository, error) {
+func New(logger log.Logger, config config.Config) (todo.Reader, error) {
 	cc, err := grpc.Dial(fmt.Sprintf("%s", config.GetTodoServiceAddress()), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("cant connect to user service: %s", err))

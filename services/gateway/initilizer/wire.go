@@ -8,24 +8,26 @@ import (
 	"github.com/google/wire"
 	"github.com/sajjad1993/todo/pkg/log"
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
-	"github.com/sajjad1993/todo/services/gateway/adapter/broker"
-	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/handlers"
+	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
+	"github.com/sajjad1993/todo/services/gateway/adapter/consumer"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller/commands"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller/queries"
+	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
 	"github.com/sajjad1993/todo/services/gateway/app/command"
 	"github.com/sajjad1993/todo/services/gateway/app/query"
 	"github.com/sajjad1993/todo/services/gateway/config"
 	"github.com/sajjad1993/todo/services/gateway/container"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/handlers"
 )
 
 // InitializeContainer  is dependency injected form of having *service.Container
 func InitializeContainer(ctx context.Context) (*container.Container, error) {
 	wire.Build(
 		container.NewContainer,
-		broker.New,
-
 		config.New,
 		log.NewLogger,
 		command.NewSignUpCommand,
@@ -45,9 +47,15 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		command.NewCreateTodoCommand,
 		command.NewDeleteTodoListCommand,
 		command.NewUpdateTodoListCommand,
-		command.NewUpdateTodoCommand,
-		command.NewDeleteTodoCommand,
-		command_handlers.New,
+		command.NewUpdateTodoItemCommand,
+		command.NewDeleteTodoItemCommand,
+		consumer.New,
+		commands.NewCommandController,
+		channel_manager.NewCommandChannelManager,
+		producer.NewUserProducer,
+		producer.NewTodoProducer,
+		publisher.New,
+		queries.NewQueryController,
 	)
 	return new(container.Container), nil
 }

@@ -3,10 +3,10 @@ package restapi
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sajjad1993/todo/pkg/log"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/handlers"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/middleware"
 	"github.com/sajjad1993/todo/services/gateway/app/query"
 	"github.com/sajjad1993/todo/services/gateway/config"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/handlers"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/middleware"
 	"net/http"
 )
 

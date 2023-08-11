@@ -10,16 +10,20 @@ import (
 	"context"
 	"github.com/sajjad1993/todo/pkg/log"
 	"github.com/sajjad1993/todo/pkg/meesage_broker"
+	"github.com/sajjad1993/todo/pkg/meesage_broker/publisher"
 	"github.com/sajjad1993/todo/services/gateway/adapter/auth_client"
-	"github.com/sajjad1993/todo/services/gateway/adapter/broker"
-	"github.com/sajjad1993/todo/services/gateway/adapter/broker/consumer/command_handlers"
-	"github.com/sajjad1993/todo/services/gateway/adapter/restapi/handlers"
+	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
+	"github.com/sajjad1993/todo/services/gateway/adapter/consumer"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller/commands"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller/queries"
+	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
 	"github.com/sajjad1993/todo/services/gateway/app/command"
 	"github.com/sajjad1993/todo/services/gateway/app/query"
 	"github.com/sajjad1993/todo/services/gateway/config"
 	"github.com/sajjad1993/todo/services/gateway/container"
+	"github.com/sajjad1993/todo/services/gateway/infrastructure/restapi/handlers"
 )
 
 // Injectors from wire.go:
@@ -32,42 +36,47 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		return nil, err
 	}
 	meesage_brokerConfig := config.NewMessageBrokerConfig(configConfig)
-	producer, err := meesage_broker.NewProducer(meesage_brokerConfig)
+	meesage_brokerProducer, err := meesage_broker.NewProducer(meesage_brokerConfig)
 	if err != nil {
 		return nil, err
 	}
-	commandPublisher := broker.New(producer)
-	signUp := command.NewSignUpCommand(commandPublisher)
-	createTodo := command.NewCreateTodoCommand(commandPublisher)
-	createTodoList := command.NewCreateTodoListCommand(commandPublisher)
-	updateTodoList := command.NewUpdateTodoListCommand(commandPublisher)
-	deleteTodoList := command.NewDeleteTodoListCommand(commandPublisher)
-	updateTodo := command.NewUpdateTodoCommand(commandPublisher)
-	deleteTodo := command.NewDeleteTodoCommand(commandPublisher)
-	commands := app.NewCommands(signUp, createTodo, createTodoList, updateTodoList, deleteTodoList, updateTodo, deleteTodo)
+	commandPublisher := publisher.New(meesage_brokerProducer)
+	writer := producer.NewUserProducer(commandPublisher)
+	signUpHandler := command.NewSignUpCommand(writer)
+	todoWriter := producer.NewTodoProducer(commandPublisher)
+	createTodoHandler := command.NewCreateTodoCommand(todoWriter)
+	createTodoListHandler := command.NewCreateTodoListCommand(todoWriter)
+	updateTodoListHandler := command.NewUpdateTodoListCommand(todoWriter)
+	deleteTodoListHandler := command.NewDeleteTodoListCommand(todoWriter)
+	updateTodoItemHandler := command.NewUpdateTodoItemCommand(todoWriter)
+	deleteTodoItemHandler := command.NewDeleteTodoItemCommand(todoWriter)
+	appCommands := app.NewCommands(signUpHandler, createTodoHandler, createTodoListHandler, updateTodoListHandler, deleteTodoListHandler, updateTodoItemHandler, deleteTodoItemHandler)
 	repository, err := auth_client.New(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
 	signIn := query.NewSignInQuery(repository)
 	checkToken := query.NewCheckTokenQuery(repository)
-	todoRepository, err := todo_list_client.New(logger, configConfig)
+	reader, err := todo_list_client.New(logger, configConfig)
 	if err != nil {
 		return nil, err
 	}
-	listToDoList := query.NewListToDoList(todoRepository)
-	queries := app.NewQueries(signIn, checkToken, listToDoList)
-	application := app.New(commands, queries)
-	handler := handlers.NewHandler(application)
-	consumer, err := meesage_broker.NewConsumer(meesage_brokerConfig)
+	listToDoList := query.NewListToDoList(reader)
+	appQueries := app.NewQueries(signIn, checkToken, listToDoList)
+	application := app.New(appCommands, appQueries)
+	channelCommandManager := channel_manager.NewCommandChannelManager()
+	commandsCommands := commands.NewCommandController(appCommands, channelCommandManager)
+	queriesQueries := queries.NewQueryController(appQueries)
+	handler := handlers.NewHandler(application, commandsCommands, queriesQueries)
+	meesage_brokerConsumer, err := meesage_broker.NewConsumer(meesage_brokerConfig)
 	if err != nil {
 		return nil, err
 	}
-	commandsHandlers, err := command_handlers.New(logger, consumer, signUp, createTodoList, createTodo, deleteTodoList, deleteTodo, updateTodoList, updateTodo)
+	commandsHandlers, err := consumer.New(logger, meesage_brokerConsumer, channelCommandManager)
 	if err != nil {
 		return nil, err
 	}
-	containerContainer, err := container.NewContainer(logger, configConfig, application, commandPublisher, producer, handler, commandsHandlers)
+	containerContainer, err := container.NewContainer(logger, configConfig, application, commandPublisher, meesage_brokerProducer, handler, commandsHandlers)
 	if err != nil {
 		return nil, err
 	}
