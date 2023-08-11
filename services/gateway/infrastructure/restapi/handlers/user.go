@@ -21,7 +21,7 @@ func (h *Handler) SignUp() gin.HandlerFunc {
 			Password: req.Password,
 			Email:    req.Email,
 		}
-		err := h.controller.SignUp(ctx, *userEnt)
+		err := h.commandController.SignUp(ctx, *userEnt)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return

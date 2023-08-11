@@ -15,6 +15,7 @@ import (
 	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
 	"github.com/sajjad1993/todo/services/gateway/adapter/consumer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/controller/commands"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller/queries"
 	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
@@ -61,11 +62,12 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		return nil, err
 	}
 	listToDoList := query.NewListToDoList(reader)
-	queries := app.NewQueries(signIn, checkToken, listToDoList)
-	application := app.New(appCommands, queries)
+	appQueries := app.NewQueries(signIn, checkToken, listToDoList)
+	application := app.New(appCommands, appQueries)
 	channelCommandManager := channel_manager.NewCommandChannelManager()
 	commandsCommands := commands.NewCommandController(appCommands, channelCommandManager)
-	handler := handlers.NewHandler(application, commandsCommands)
+	queriesQueries := queries.NewQueryController(appQueries)
+	handler := handlers.NewHandler(application, commandsCommands, queriesQueries)
 	meesage_brokerConsumer, err := meesage_broker.NewConsumer(meesage_brokerConfig)
 	if err != nil {
 		return nil, err

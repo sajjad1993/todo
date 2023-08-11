@@ -27,7 +27,7 @@ func (h *Handler) CreateTodoList() gin.HandlerFunc {
 			Description: req.Description,
 			UserID:      token.ID,
 		}
-		err = h.controller.CreateTodoList(ctx, todoListEnt)
+		err = h.commandController.CreateTodoList(ctx, todoListEnt)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
@@ -44,7 +44,7 @@ func (h *Handler) ListTodoList() gin.HandlerFunc {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
 		}
-		todos, err := h.application.Queries.ListToDoList.Run(ctx, token.ID)
+		todos, err := h.queryController.ListToDoList(ctx, token.ID)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
@@ -82,7 +82,7 @@ func (h *Handler) UpdateTodoList() gin.HandlerFunc {
 			Description: req.Description,
 			UserID:      token.ID,
 		}
-		err = h.controller.UpdateTodoList(ctx, todoListEnt)
+		err = h.commandController.UpdateTodoList(ctx, todoListEnt)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
@@ -104,7 +104,7 @@ func (h *Handler) DeleteTodoList() gin.HandlerFunc {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
 		}
-		err = h.controller.DeleteTodoList(ctx, uint(todoListId), token.ID)
+		err = h.commandController.DeleteTodoList(ctx, uint(todoListId), token.ID)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
@@ -131,7 +131,7 @@ func (h *Handler) CreateTodo() gin.HandlerFunc {
 			ListId:   req.ListID,
 			UserId:   token.ID,
 		}
-		err = h.controller.CreateTodoItem(ctx, todoEnt)
+		err = h.commandController.CreateTodoItem(ctx, todoEnt)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
@@ -167,7 +167,7 @@ func (h *Handler) UpdateTodo() gin.HandlerFunc {
 			Priority: req.Priority,
 			UserId:   token.ID,
 		}
-		err = h.controller.UpdateTodoItem(ctx, todoEnt)
+		err = h.commandController.UpdateTodoItem(ctx, todoEnt)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return
@@ -190,7 +190,7 @@ func (h *Handler) DeleteTodo() gin.HandlerFunc {
 			return
 		}
 
-		err = h.controller.DeleteTodoList(ctx, uint(todoListId), token.ID)
+		err = h.commandController.DeleteTodoList(ctx, uint(todoListId), token.ID)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return

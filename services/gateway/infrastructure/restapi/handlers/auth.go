@@ -21,7 +21,7 @@ func (h *Handler) SignIn() gin.HandlerFunc {
 			Password: req.Password,
 			Email:    req.Email,
 		}
-		token, err := h.application.Queries.SignIn.Run(ctx, userEnt)
+		token, err := h.queryController.SignIn(ctx, userEnt)
 		if err != nil {
 			rest.FailedResponse(ctx, getStatusCodeByError(err), err.Error())
 			return

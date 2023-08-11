@@ -13,6 +13,7 @@ import (
 	"github.com/sajjad1993/todo/services/gateway/adapter/channel_manager"
 	"github.com/sajjad1993/todo/services/gateway/adapter/consumer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/controller/commands"
+	"github.com/sajjad1993/todo/services/gateway/adapter/controller/queries"
 	"github.com/sajjad1993/todo/services/gateway/adapter/producer"
 	"github.com/sajjad1993/todo/services/gateway/adapter/todo_list_client"
 	"github.com/sajjad1993/todo/services/gateway/app"
@@ -54,6 +55,7 @@ func InitializeContainer(ctx context.Context) (*container.Container, error) {
 		producer.NewUserProducer,
 		producer.NewTodoProducer,
 		publisher.New,
+		queries.NewQueryController,
 	)
 	return new(container.Container), nil
 }
