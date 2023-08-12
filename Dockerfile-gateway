@@ -1,10 +1,24 @@
+# Build stage
 FROM golang:1.19 AS build
 
 WORKDIR /app
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
-COPY . .
-RUN go build -o /app/service.gateway services/gateway/main.go
 
-CMD ["/app/service.gateway"]
+# Copy the services directory
+COPY services/gateway/ /app/gateway/
+COPY app.env /app/gateway
+
+# Download dependencies from the pkg directory
+COPY services/pkg/ /app/pkg/
+
+# Build the application
+WORKDIR /app/gateway
+RUN go mod download
+RUN go build -o /app/service.gateway main.go
+
+# Final stage
+FROM debian:buster-slim AS run
+# Copy the executable
+COPY --from=build /app/service.gateway .
+COPY  --from=build  /app/gateway/app.env .
+# Define the command to run the executable
+CMD ["/service.gateway"]

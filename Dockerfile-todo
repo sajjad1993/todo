@@ -1,10 +1,25 @@
+# Build stage
 FROM golang:1.19 AS build
 
 WORKDIR /app
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
-COPY . .
-RUN go build -o /app/service.todo_list services/todo_list/main.go
 
-CMD ["/app/service.todo_list"]
+# Copy the services directory
+COPY services/todo_list/ /app/todo/
+COPY app.env /app/todo
+
+# Download dependencies from the pkg directory
+COPY services/pkg/ /app/pkg/
+
+# Build the application
+WORKDIR /app/todo
+RUN go mod download
+RUN go build -o /app/service.todo main.go
+
+# Final stage
+FROM debian:buster-slim AS run
+# Copy the executable
+COPY --from=build /app/service.todo .
+COPY  --from=build  /app/todo/app.env . 
+
+# Define the command to run the executable
+CMD ["/service.todo"]
