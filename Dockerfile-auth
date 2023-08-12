@@ -1,10 +1,25 @@
+# Build stage
 FROM golang:1.19 AS build
 
 WORKDIR /app
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
-COPY . .
-RUN go build -o /app/service.auth services/auth/main.go
 
-CMD ["/app/service.auth"]
+# Copy the services directory
+COPY services/auth/ /app/auth/
+COPY app.env /app/auth
+
+# Download dependencies from the pkg directory
+COPY services/pkg/ /app/pkg/
+
+# Build the application
+WORKDIR /app/auth
+RUN go mod download
+RUN go build -o /app/service.auth main.go
+
+# Final stage
+FROM debian:buster-slim AS run
+# Copy the executable
+
+COPY --from=build /app/service.auth .
+COPY  --from=build  /app/auth/app.env .
+# Define the command to run the executable
+CMD ["/service.auth"]
